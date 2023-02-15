@@ -1,6 +1,8 @@
 package Field;
 
 import javax.swing.*;
+import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.terminal.Terminal;
 
 public class Field {
     public static void main(String[] args) {
