@@ -1,8 +1,11 @@
 import messages.Colors;
+import messages.Messages;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -13,7 +16,7 @@ public class Game {
     private static HashMap<String, Socket> clientMap = new HashMap<>();
     private static int playerLimit;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         ServerSocket serverSocket;
         int totalPlayers = 0;
@@ -35,13 +38,13 @@ public class Game {
                 final Socket clientSocket = serverSocket.accept();
 
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                writeAndSend(clientSocket, Colors.YELLOW + "What is your character's name?" + Colors.RESET);
+                writeAndSend(clientSocket, Colors.YELLOW + Messages.ASK_FOR_USERNAME + Colors.RESET);
 
                 String userName = consoleInput.readLine();
                 totalPlayers++;
                 if (totalPlayers < playerLimit) {
-                    broadcastMessage(Colors.BLUE + userName.concat(" has joined the party. Waiting for more players...") + Colors.RESET);
-                    System.out.println(Colors.BLUE + userName.concat(" has joined the party" + Colors.RESET).toUpperCase());
+                    broadcastMessage(Colors.BLUE + Messages.USER_JOINED.formatted(userName)+ Colors.RESET);
+                    System.out.println(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     threadFactory.submit(new Thread(() -> {
                         try {
                             playerThread(userName, clientSocket, clientMap);
@@ -50,9 +53,10 @@ public class Game {
                         }
                     }));
                 } else if (totalPlayers == playerLimit) {
-                    broadcastMessage(Colors.BLUE + userName.concat(" has joined the party. The game is about to start") + Colors.RESET);
-                    System.out.println(Colors.BLUE + userName.concat(" has joined the party" + Colors.RESET).toUpperCase());
-                    System.out.println("Game starting");
+                    broadcastMessage(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
+                    broadcastMessage(Colors.BLUE + Messages.GAME_STARTED + Colors.RESET);
+                    System.out.println(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
+                    System.out.println(Messages.GAME_STARTED);
                     threadFactory.submit(new Thread(() -> {
                         try {
                             playerThread(userName, clientSocket, clientMap);
@@ -62,15 +66,19 @@ public class Game {
                     }));
 
                 } else {
-                    System.out.println("Player limit has been reached");
+                    System.out.println(Messages.PLAYER_LIMIT);
                 }
-
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private static void printMainMenu() throws IOException {
+        Path filePath = Path.of("resources/ascii/mainMenu.txt");
+        String content = Files.readString(filePath);
+        broadcastMessage(content);
+    }
 
     private static void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException {
         clientMap.put(user, socket);
@@ -87,11 +95,12 @@ public class Game {
             }
         }
         clientMap.remove(user, socket);
-        broadcastMessage(Colors.YELLOW + user.concat(" has left the server").toUpperCase() + Colors.RESET);
-        System.out.println(Colors.YELLOW + user.concat(" has left the server").toUpperCase() + Colors.RESET);
-        System.out.println(Colors.RED + clientMap + Colors.RESET);
+        //broadcastMessage(Colors.YELLOW + user.concat(" has left the server").toUpperCase() + Colors.RESET);
+        System.out.printf(Colors.YELLOW+ Messages.USER_LEFT.formatted(user) + Colors.RESET);
+        broadcastMessage(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
+        //System.out.println(Colors.YELLOW + user.concat(" has left the server").toUpperCase() + Colors.RESET);
+        //System.out.println(Colors.RED + clientMap + Colors.RESET);
     }
-
 
     private static void broadcastMessage(String message) throws IOException {
         for (Map.Entry<String, Socket> characterName : clientMap.entrySet()) {
@@ -105,5 +114,4 @@ public class Game {
         outputName.newLine();
         outputName.flush();
     }
-
 }
