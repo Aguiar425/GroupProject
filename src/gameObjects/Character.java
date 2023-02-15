@@ -1,3 +1,5 @@
+package gameObjects;
+
 public class Character {
 
     private CharacterClasses characterClass;

@@ -1,3 +1,5 @@
+package gameObjects;
+
 public enum CharacterClasses {
     ROGUE(50, 3),
     WARRIOR(100, 5),
