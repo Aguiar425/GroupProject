@@ -38,6 +38,7 @@ public class Game {
 
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 BufferedWriter outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+                printMainMenu();
                 outputName.write(YELLOW + "What is your character's name?" + RESET);
                 outputName.newLine();
                 outputName.flush();
@@ -78,6 +79,15 @@ public class Game {
 
     private static void startGame() throws IOException {
         broadcastMessage("What is your character's class?");
+    }
+
+    private static void printMainMenu() throws IOException {
+        Scanner input = new Scanner(new File("resources/ascii/mainMenu.txt"));
+
+        while (input.hasNextLine())
+        {
+            broadcastMessage(input.nextLine().toString());
+        }
     }
 
 
