@@ -35,7 +35,7 @@ public class Game {
                 final Socket clientSocket = serverSocket.accept();
 
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                writeAndSend(clientSocket, Colors.YELLOW + "Please insert your username (" + Colors.RED + "EXIT" + Colors.YELLOW + " to leave the room, and " + Colors.PINK + "@+username" + Colors.YELLOW + " to send pm)" + Colors.RESET);
+                writeAndSend(clientSocket, Colors.YELLOW + "What is your character's name?" + Colors.RESET);
 
                 String userName = consoleInput.readLine();
                 totalPlayers++;
