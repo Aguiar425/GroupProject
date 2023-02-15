@@ -39,17 +39,32 @@ public class Game {
 
                 String userName = consoleInput.readLine();
                 totalPlayers++;
-                broadcastMessage(Colors.BLUE + userName.concat(" has joined the server") + Colors.RESET);
-                System.out.println(Colors.BLUE + userName.concat(" has joined the server" + Colors.RESET).toUpperCase());
+                if (totalPlayers < playerLimit) {
+                    broadcastMessage(Colors.BLUE + userName.concat(" has joined the party. Waiting for more players...") + Colors.RESET);
+                    System.out.println(Colors.BLUE + userName.concat(" has joined the party" + Colors.RESET).toUpperCase());
+                    threadFactory.submit(new Thread(() -> {
+                        try {
+                            playerThread(userName, clientSocket, clientMap);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }));
+                } else if (totalPlayers == playerLimit) {
+                    broadcastMessage(Colors.BLUE + userName.concat(" has joined the party. The game is about to start") + Colors.RESET);
+                    System.out.println(Colors.BLUE + userName.concat(" has joined the party" + Colors.RESET).toUpperCase());
+                    System.out.println("Game starting");
+                    threadFactory.submit(new Thread(() -> {
+                        try {
+                            playerThread(userName, clientSocket, clientMap);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }));
 
-                Thread t = new Thread(() -> {
-                    try {
-                        playerThread(userName, clientSocket, clientMap);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                threadFactory.submit(t);
+                } else {
+                    System.out.println("Player limit has been reached");
+                }
+
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
