@@ -5,15 +5,28 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Game {
     private static HashMap<String, Socket> clientMap = new HashMap<>();
+    private static int playerLimit;
 
     public static void main(String[] args) {
 
         ServerSocket serverSocket;
+        int totalPlayers = 0;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("How many players?");
+        while (true) {
+            try {
+                playerLimit = Integer.parseInt(scanner.nextLine());
+                break;
+            } catch (NumberFormatException nfe) {
+                System.out.println("Please insert a valid number");
+            }
+        }
         try {
             serverSocket = new ServerSocket(8080);
 
@@ -25,6 +38,7 @@ public class Game {
                 writeAndSend(clientSocket, Colors.YELLOW + "Please insert your username (" + Colors.RED + "EXIT" + Colors.YELLOW + " to leave the room, and " + Colors.PINK + "@+username" + Colors.YELLOW + " to send pm)" + Colors.RESET);
 
                 String userName = consoleInput.readLine();
+                totalPlayers++;
                 broadcastMessage(Colors.BLUE + userName.concat(" has joined the server") + Colors.RESET);
                 System.out.println(Colors.BLUE + userName.concat(" has joined the server" + Colors.RESET).toUpperCase());
 
