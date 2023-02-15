@@ -11,6 +11,8 @@ public class Character {
     public Character(CharacterClasses characterClass, String name) {
         this.characterClass = characterClass;
         this.name = name;
+        this.hitpoints = characterClass.getStartingHitpoints();
+        this.damage = characterClass.getStartingDamage();
         this.isLeader = false;
     }
 

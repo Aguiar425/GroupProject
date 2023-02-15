@@ -15,11 +15,13 @@ public class Game {
     private static HashMap<String, Socket> clientMap = new HashMap<>();
     private static int playerLimit;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         ServerSocket serverSocket;
         int totalPlayers = 0;
         Scanner scanner = new Scanner(System.in);
+        printMainMenu();
+        System.out.println("==".repeat(75));
         System.out.println("How many players?");
         while (true){
             try{
@@ -38,7 +40,6 @@ public class Game {
 
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 BufferedWriter outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                printMainMenu();
                 outputName.write(YELLOW + "What is your character's name?" + RESET);
                 outputName.newLine();
                 outputName.flush();
@@ -86,10 +87,9 @@ public class Game {
 
         while (input.hasNextLine())
         {
-            broadcastMessage(input.nextLine().toString());
+            System.out.println(input.nextLine());
         }
     }
-
 
     private static void newClient(String user, Socket socket, List<Socket> socketList, HashMap<String, Socket> clientMap) throws IOException {
         socketList.add(socket);
