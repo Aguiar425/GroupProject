@@ -9,10 +9,6 @@ public class Player {
 
     private Character[] party;
 
-    public Player(int size) {
-        this.party = new Character[size];
-    }
-
     public static void main(String[] args) {
         Socket socket = null;
         BufferedReader inputReader;

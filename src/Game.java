@@ -18,7 +18,7 @@ public class Game {
             serverSocket = new ServerSocket(8080);
 
             while (true) {
-                ExecutorService chat = Executors.newCachedThreadPool();
+                ExecutorService threadFactory = Executors.newCachedThreadPool();
                 final Socket clientSocket = serverSocket.accept();
 
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -30,12 +30,12 @@ public class Game {
 
                 Thread t = new Thread(() -> {
                     try {
-                        newClient(userName, clientSocket, clientMap);
+                        playerThread(userName, clientSocket, clientMap);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 });
-                chat.submit(t);
+                threadFactory.submit(t);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -43,14 +43,14 @@ public class Game {
     }
 
 
-    private static void newClient(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException {
+    private static void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException {
         clientMap.put(user, socket);
         System.out.println(Colors.RED + clientMap + Colors.RESET);
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String msgReceived;
 
         while ((msgReceived = inputReader.readLine()) != null) {
-            if (msgReceived.startsWith("@")) {
+            if (msgReceived.startsWith("/")) {
 
             } else {
                 System.out.println("Message received from " + user.concat(": " + msgReceived));
