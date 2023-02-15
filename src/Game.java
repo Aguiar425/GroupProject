@@ -16,7 +16,7 @@ public class Game {
     private static HashMap<String, Socket> clientMap = new HashMap<>();
     private static int playerLimit;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         ServerSocket serverSocket;
         int totalPlayers = 0;
@@ -41,9 +41,13 @@ public class Game {
                 writeAndSend(clientSocket, Colors.YELLOW + Messages.ASK_FOR_USERNAME + Colors.RESET);
 
                 String userName = consoleInput.readLine();
+                clientMap.put(userName, clientSocket);
+                printMainMenu(clientSocket);
+
                 totalPlayers++;
+
                 if (totalPlayers < playerLimit) {
-                    broadcastMessage(Colors.BLUE + Messages.USER_JOINED.formatted(userName)+ Colors.RESET);
+                    broadcastMessage(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     System.out.println(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     threadFactory.submit(new Thread(() -> {
                         try {
@@ -74,14 +78,14 @@ public class Game {
         }
     }
 
-    private static void printMainMenu() throws IOException {
+    private static void printMainMenu(Socket clientSocket) throws IOException {
         Path filePath = Path.of("resources/ascii/mainMenu.txt");
         String content = Files.readString(filePath);
+        // writeAndSend(clientSocket, content);
         broadcastMessage(content);
     }
 
     private static void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException {
-        clientMap.put(user, socket);
         System.out.println(Colors.RED + clientMap + Colors.RESET);
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String msgReceived;
@@ -96,7 +100,7 @@ public class Game {
         }
         clientMap.remove(user, socket);
         //broadcastMessage(Colors.YELLOW + user.concat(" has left the server").toUpperCase() + Colors.RESET);
-        System.out.printf(Colors.YELLOW+ Messages.USER_LEFT.formatted(user) + Colors.RESET);
+        System.out.printf(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
         broadcastMessage(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
         //System.out.println(Colors.YELLOW + user.concat(" has left the server").toUpperCase() + Colors.RESET);
         //System.out.println(Colors.RED + clientMap + Colors.RESET);
