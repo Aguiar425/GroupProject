@@ -102,7 +102,7 @@ public class GameServer {
         String content = Files.readString(filePath);
         broadcastMessage(content);
         //broadcastMessage(Colors.RED + "       <N>"+ Colors.RESET+"ew Game.Game                 " + Colors.RED + "<L>"+ Colors.RESET + "oad Game.Game");
-        broadcastMessage(game.startGame());
+        //broadcastMessage(game.startGame());
         //BufferedReader input = new BufferedReader(new InputStreamReader(socket.GetInputStream()));
     }
 

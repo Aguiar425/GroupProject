@@ -14,7 +14,7 @@ public class Game {
     }
 
     public String startGame() throws IOException {
-       return printChapterZero();
+        return printChapterOne();
     }
 
     public String printChapterZero() throws IOException {
@@ -31,7 +31,7 @@ public class Game {
         return content;
     }
 
-    public String printChapterTwo() throws IOException{
+    public String printChapterTwo() throws IOException {
         currentRoom = 2;
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterTwoChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/LeftRight.txt");
@@ -74,7 +74,7 @@ public class Game {
         return null;
     }
 
-    public String printBattleThree(){
+    public String printBattleThree() {
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
 
         return null;
@@ -96,11 +96,11 @@ public class Game {
         return content;
     }
 
-    public String printChest(){
+    public String printChest() {
         return null;
     }
 
-    public String printBadEnding(){
+    public String printBadEnding() {
         return null;
     }
 
