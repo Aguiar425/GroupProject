@@ -2,6 +2,7 @@ import messages.Colors;
 import messages.Messages;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -14,13 +15,16 @@ import java.util.concurrent.Executors;
 
 public class GameServer {
     private static HashMap<String, Socket> clientMap = new HashMap<>();
+    private static HashMap<String, String> playerChoices = new HashMap<>();
     private static int playerLimit;
     private static Game game;
 
     public static void main(String[] args) {
         game = new Game();
+        playerChoices = PlayerChoices.playerChoices();
         ServerSocket serverSocket;
         int totalPlayers = 0;
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("How many players?");
         while (true) {
@@ -100,17 +104,22 @@ public class GameServer {
         while ((msgReceived = inputReader.readLine()) != null) {
             if (msgReceived.startsWith("/")) {
 
+            } else if (msgReceived.startsWith("@")) {
+                //msgReceived = msgReceived.substring(1);
+                for (Map.Entry<String, String> set : playerChoices.entrySet()) {
+                    if (set.getKey().equals(msgReceived)) {
+                        stringToMethod(set.getValue());
+
+                    }
+                }
             } else {
-                System.out.println("Message received from " + user.concat(": " + msgReceived));
                 broadcastMessage(user + ": " + msgReceived);
             }
         }
         clientMap.remove(user, socket);
-        //broadcastMessage(Colors.YELLOW + user.concat(" has left the server").toUpperCase() + Colors.RESET);
         System.out.printf(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
         broadcastMessage(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
-        //System.out.println(Colors.YELLOW + user.concat(" has left the server").toUpperCase() + Colors.RESET);
-        //System.out.println(Colors.RED + clientMap + Colors.RESET);
+
     }
 
     private static void broadcastMessage(String message) throws IOException {
@@ -124,5 +133,22 @@ public class GameServer {
         outputName.write(message);
         outputName.newLine();
         outputName.flush();
+    }
+
+    private static void stringToMethod(String value) {
+        try {
+            Class<?> clazz = Game.class;
+            Method method = clazz.getDeclaredMethod(value);
+            Class<?> returnType = method.getReturnType();
+            broadcastMessage((String) method.invoke(clazz.newInstance()));
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+    }
+
+    public static HashMap<String, Socket> getClientMap() {
+        return clientMap;
     }
 }
