@@ -15,9 +15,10 @@ import java.util.concurrent.Executors;
 public class GameServer {
     private static HashMap<String, Socket> clientMap = new HashMap<>();
     private static int playerLimit;
+    private static Game game;
 
     public static void main(String[] args) {
-
+        game = new Game();
         ServerSocket serverSocket;
         int totalPlayers = 0;
         Scanner scanner = new Scanner(System.in);
@@ -42,32 +43,26 @@ public class GameServer {
 
                 String userName = consoleInput.readLine();
                 clientMap.put(userName, clientSocket);
-                printMainMenu(clientSocket);
 
                 totalPlayers++;
 
                 if (totalPlayers < playerLimit) {
                     broadcastMessage(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
+
                     System.out.println(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
-                    threadFactory.submit(new Thread(() -> {
-                        try {
-                            playerThread(userName, clientSocket, clientMap);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }));
+
+                    createThread(threadFactory, clientSocket, userName);
                 } else if (totalPlayers == playerLimit) {
                     broadcastMessage(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     broadcastMessage(Colors.BLUE + Messages.GAME_STARTED + Colors.RESET);
+
                     System.out.println(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     System.out.println(Messages.GAME_STARTED);
-                    threadFactory.submit(new Thread(() -> {
-                        try {
-                            playerThread(userName, clientSocket, clientMap);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }));
+
+                    printMainMenu(); //TODO new game selection
+                    broadcastMessage(game.startGame());
+
+                    createThread(threadFactory, clientSocket, userName);
 
                 } else {
                     System.out.println(Messages.PLAYER_LIMIT);
@@ -78,11 +73,23 @@ public class GameServer {
         }
     }
 
-    private static void printMainMenu(Socket clientSocket) throws IOException {
+    private static void createThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
+        threadFactory.submit(new Thread(() -> {
+            try {
+                playerThread(userName, clientSocket, clientMap);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+    }
+
+    private static void printMainMenu() throws IOException {
         Path filePath = Path.of("resources/ascii/mainMenu.txt");
         String content = Files.readString(filePath);
-        // writeAndSend(clientSocket, content);
         broadcastMessage(content);
+        //broadcastMessage(Colors.RED + "       <N>"+ Colors.RESET+"ew Game                 " + Colors.RED + "<L>"+ Colors.RESET + "oad Game");
+        broadcastMessage(game.startGame());
+        //BufferedReader input = new BufferedReader(new InputStreamReader(socket.GetInputStream()));
     }
 
     private static void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException {
