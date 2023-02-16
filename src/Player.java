@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 
 public class Player {
 
-    private Character[] party;
+    Character character;
 
     public static void main(String[] args) {
         Socket socket = null;
