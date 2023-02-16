@@ -84,7 +84,7 @@ public class GameServer {
     }
 
     private static void printMainMenu() throws IOException {
-        Path filePath = Path.of("resources/ascii/mainMenu.txt");
+        Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
         String content = Files.readString(filePath);
         broadcastMessage(content);
         //broadcastMessage(Colors.RED + "       <N>"+ Colors.RESET+"ew Game                 " + Colors.RED + "<L>"+ Colors.RESET + "oad Game");

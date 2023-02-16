@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,17 +16,20 @@ public class Game {
        return printFirstChapter();
     }
 
-    private String printFirstChapter() throws IOException {
+    public String printFirstChapter() throws IOException {
         Path filePath = Path.of("resources/Chapters/Chapter1.txt");
         String content = Files.readString(filePath);
         return content;
     }
 
-    private String printSecondChapter(){
-        return null;
+    public String printSecondChapter() throws IOException {
+        Path screen = Path.of("resources/ascii/Game_Screens/hallway_LeftRight.txt");
+        Path story = Path.of("resources/Chapters/Chapter2.txt");
+        String content = Files.readString(screen) + "\n" + Files.readString(story);
+        return content;
     }
 
-    private String printThirdChapter(){
+    public String printThirdChapter(){
         return null;
     }
 }
