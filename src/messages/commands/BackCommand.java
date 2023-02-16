@@ -27,7 +27,7 @@ public class BackCommand implements CommandHandler {
             } else if (game.getCurrentRoom() == 4) {
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterThree());
-                game.setCurrentRoom(4);
+                game.setCurrentRoom(3);
             } else if (game.getCurrentRoom() == 10) {
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterTwo());
