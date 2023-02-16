@@ -1,44 +1,33 @@
 package messages.commands;
 
-import java.lang.reflect.Method;
-/*
-
 public enum Commands {
 
-  */
-/*  HELP ("/help", HELP.method ),  //Lists all commands
-    SAVE("/save"),
-    EXIT("/exit"),
-    BACK("/back"),  //This command returns the party to the previous screen
-    LIST("/list"); //Lists all players
+
+    HELP("/help", new HelpCommand()),  //Lists all commands
+    SAVE("/save", new SaveCommand()),
+    EXIT("/exit", new ExitCommand()),
+    BACK("/back", new BackCommand()),  //This command returns the party to the previous screen
+    LIST("/list", new ListCommand()); //Lists all players
 
     private String description;
-    private CommandHandler handler;
+    private CommandHandler command;
 
-    Command(String description, CommandHandler handler) {
+    Commands(String description, CommandHandler command) {
         this.description = description;
-        this.handler = handler;
-    }
-*//*
-
-    public void help(){
+        this.command = command;
 
     }
 
-    public void save(){
-
+    public static Commands getCommand(String description) {
+        for (Commands command : values()) {
+            if (description.equals(command.description)) {
+                return command;
+            }
+        }
+        return null;
     }
 
-    public void exit(){
-
+    public CommandHandler getHandler() {
+        return command;
     }
-
-    public void back(){
-
-    }
-
-    public void list(){
-
-    }
-*/
-//}
+}

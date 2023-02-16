@@ -1,4 +1,11 @@
 package messages.commands;
 
-public class HelpCommand {
+import Game.Game;
+import Game.GameServer;
+
+public class HelpCommand implements CommandHandler {
+    @Override
+    public void execute(GameServer server, Game game) {
+
+    }
 }

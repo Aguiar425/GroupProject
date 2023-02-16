@@ -1,4 +1,11 @@
 package messages.commands;
 
-public class SaveCommand {
+import Game.Game;
+import Game.GameServer;
+
+public class SaveCommand implements CommandHandler {
+    @Override
+    public void execute(GameServer server, Game game) {
+
+    }
 }

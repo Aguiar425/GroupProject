@@ -2,6 +2,8 @@ package Game;
 
 import messages.Colors;
 import messages.Messages;
+import messages.commands.Commands;
+
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
@@ -20,7 +22,7 @@ public class GameServer {
     private static int playerLimit;
     private static Game game;
 
-    public static void main(String[] args) {
+    public GameServer() {
         game = new Game();
         ServerSocket serverSocket;
         int totalPlayers = 0;
@@ -77,11 +79,15 @@ public class GameServer {
         }
     }
 
-    private static void choicesSetup(String path) {
+    public static void setPlayerChoices(HashMap<String, String> playerChoices) {
+        GameServer.playerChoices = playerChoices;
+    }
+
+    private void choicesSetup(String path) {
         playerChoices = PlayerChoices.playerChoices(path);
     }
 
-    private static void createThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
+    private void createThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
         threadFactory.submit(new Thread(() -> {
             try {
                 playerThread(userName, clientSocket, clientMap);
@@ -91,7 +97,7 @@ public class GameServer {
         }));
     }
 
-    private static void printMainMenu() throws IOException {
+    private void printMainMenu() throws IOException {
         Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
         String content = Files.readString(filePath);
         broadcastMessage(content);
@@ -100,14 +106,14 @@ public class GameServer {
         //BufferedReader input = new BufferedReader(new InputStreamReader(socket.GetInputStream()));
     }
 
-    private static void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException {
+    private void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException {
         System.out.println(Colors.RED + clientMap + Colors.RESET);
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String msgReceived;
 
         while ((msgReceived = inputReader.readLine()) != null) {
             if (msgReceived.startsWith("/")) {
-
+                dealWithCommand(msgReceived);
             } else if (msgReceived.startsWith("@")) {
                 for (Map.Entry<String, String> set : playerChoices.entrySet()) {
                     if (set.getKey().equals(msgReceived)) {
@@ -125,20 +131,20 @@ public class GameServer {
 
     }
 
-    private static void broadcastMessage(String message) throws IOException {
+    public void broadcastMessage(String message) throws IOException {
         for (Map.Entry<String, Socket> characterName : clientMap.entrySet()) {
             writeAndSend(characterName.getValue(), message);
         }
     }
 
-    private static void writeAndSend(Socket clientSocket, String message) throws IOException {
+    private void writeAndSend(Socket clientSocket, String message) throws IOException {
         BufferedWriter outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         outputName.write(message);
         outputName.newLine();
         outputName.flush();
     }
 
-    private static void stringToMethod(String value) {
+    private void stringToMethod(String value) {
         try {
             Class<?> clazz = Game.class;
             Method method = clazz.getDeclaredMethod(value);
@@ -149,11 +155,20 @@ public class GameServer {
         }
     }
 
-    public static void setPlayerChoices(HashMap<String, String> playerChoices) {
-        GameServer.playerChoices = playerChoices;
-    }
-
-    public static HashMap<String, Socket> getClientMap() {
+    public HashMap<String, Socket> getClientMap() {
         return clientMap;
     }
+
+    private void dealWithCommand(String message) throws IOException {
+        String description = message.split(" ")[0];
+        Commands command = Commands.getCommand(description);
+
+        if (command == null) {
+            broadcastMessage("NO SUCH COMMAND EXISTS");
+            return;
+        }
+
+        command.getHandler().execute(GameServer.this, this.game);
+    }
+
 }

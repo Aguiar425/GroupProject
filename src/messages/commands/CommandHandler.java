@@ -1,8 +1,9 @@
 package messages.commands;
 
-import Game.*;
+import Game.Game;
+import Game.GameServer;
 
-    /*public interface CommandHandler {
-        void execute(GameServer server, GameServer.ClientConnectionHandler clientConnectionHandler);
-    }*/
+public interface CommandHandler {
+    void execute(GameServer server, Game game);
+}
 
