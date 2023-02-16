@@ -32,6 +32,7 @@ public class GameServer {
         while (true) {
             try {
                 playerLimit = Integer.parseInt(scanner.nextLine());
+                System.out.println("Max player set to: " + playerLimit);
                 break;
             } catch (NumberFormatException nfe) {
                 System.out.println("Please insert a valid number");

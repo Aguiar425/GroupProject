@@ -21,15 +21,15 @@ public class BackCommand implements CommandHandler {
 //                    server.broadcastMessage(game.printChapterThree());
 //            }
             if (game.getCurrentRoom() == 2 || game.getCurrentRoom() == 3) {
-                System.out.println(game.getCurrentRoom());
+                System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterOne());
                 game.setCurrentRoom(1);
             } else if (game.getCurrentRoom() == 4) {
-                System.out.println(game.getCurrentRoom());
+                System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterThree());
                 game.setCurrentRoom(4);
             } else if (game.getCurrentRoom() == 10) {
-                System.out.println(game.getCurrentRoom());
+                System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterTwo());
                 game.setCurrentRoom(2);
             } else {
