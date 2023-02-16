@@ -1,6 +1,7 @@
+package Game;
+
 import messages.Colors;
 import messages.Messages;
-
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
@@ -94,7 +95,7 @@ public class GameServer {
         Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
         String content = Files.readString(filePath);
         broadcastMessage(content);
-        //broadcastMessage(Colors.RED + "       <N>"+ Colors.RESET+"ew Game                 " + Colors.RED + "<L>"+ Colors.RESET + "oad Game");
+        //broadcastMessage(Colors.RED + "       <N>"+ Colors.RESET+"ew Game.Game                 " + Colors.RED + "<L>"+ Colors.RESET + "oad Game.Game");
         broadcastMessage(game.startGame());
         //BufferedReader input = new BufferedReader(new InputStreamReader(socket.GetInputStream()));
     }
@@ -145,9 +146,11 @@ public class GameServer {
             broadcastMessage((String) method.invoke(clazz.newInstance()));
         } catch (Exception e) {
             e.printStackTrace();
-
         }
+    }
 
+    public static void setPlayerChoices(HashMap<String, String> playerChoices) {
+        GameServer.playerChoices = playerChoices;
     }
 
     public static HashMap<String, Socket> getClientMap() {

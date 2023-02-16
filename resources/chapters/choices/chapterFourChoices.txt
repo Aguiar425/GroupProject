@@ -1,0 +1,3 @@
+@L,printBadEnding
+@F,printBattleThree
+@R,printFinalBattle

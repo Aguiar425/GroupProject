@@ -1,3 +1,5 @@
+package Game;
+
 import messages.Colors;
 
 import java.io.*;

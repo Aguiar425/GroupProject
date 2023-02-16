@@ -1,7 +1,7 @@
 package messages;
 
 public abstract class Messages {
-    public static final String GAME_STARTED = "Game started";
+    public static final String GAME_STARTED = "Game.Game started";
     public static final String BATTLE_STARTED = "The party has encountered a %s";
     public static final String TURN_RIGHT = "The party turns right";
     public static final String TURN_LEFT = "The party turns left";
