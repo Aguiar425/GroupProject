@@ -21,7 +21,6 @@ public class GameServer {
 
     public static void main(String[] args) {
         game = new Game();
-        playerChoices = PlayerChoices.playerChoices();
         ServerSocket serverSocket;
         int totalPlayers = 0;
 
@@ -65,7 +64,7 @@ public class GameServer {
 
                     printMainMenu(); //TODO new game selection
                     broadcastMessage(game.startGame());
-
+                    choicesSetup("resources/chapters/choices/chapterOneChoices.txt");
                     createThread(threadFactory, clientSocket, userName);
 
                 } else {
@@ -75,6 +74,10 @@ public class GameServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void choicesSetup(String path) {
+        playerChoices = PlayerChoices.playerChoices(path);
     }
 
     private static void createThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
@@ -105,7 +108,6 @@ public class GameServer {
             if (msgReceived.startsWith("/")) {
 
             } else if (msgReceived.startsWith("@")) {
-                //msgReceived = msgReceived.substring(1);
                 for (Map.Entry<String, String> set : playerChoices.entrySet()) {
                     if (set.getKey().equals(msgReceived)) {
                         stringToMethod(set.getValue());

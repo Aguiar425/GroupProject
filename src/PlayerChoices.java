@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class PlayerChoices {
-    public static HashMap<String, String> playerChoices() {
-        String fileName = "resources/chapters/playerChoices.txt";
+    public static HashMap<String, String> playerChoices(String path) {
         HashMap<String, String> playerChoicesMap = new HashMap<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
