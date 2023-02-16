@@ -5,12 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Game {
+    private static int currentRoom;
     private boolean inCombat;
-    private int currentRoom;
 
     public Game() {
         this.inCombat = false;
-        this.currentRoom = 1;
     }
 
     public String startGame() throws IOException {
@@ -24,7 +23,8 @@ public class Game {
     }
 
     public String printChapterOne() throws IOException {
-        currentRoom = 1;
+        setCurrentRoom(1);
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterOneChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/hallway_LeftRight.txt");
         Path story = Path.of("resources/chapters/Chapter1.txt");
         String content = Files.readString(screen) + "\n" + Files.readString(story);
@@ -32,7 +32,7 @@ public class Game {
     }
 
     public String printChapterTwo() throws IOException {
-        currentRoom = 2;
+        ;
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterTwoChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/LeftRight.txt");
         Path story = Path.of("resources/chapters/Chapter2.txt");
@@ -41,16 +41,16 @@ public class Game {
     }
 
     public String printChapterThree() throws IOException {
-        currentRoom = 3;
+        setCurrentRoom(3);
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterThreeChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/LeftRight.txt");
         Path story = Path.of("resources/chapters/Chapter3.txt");
         String content = Files.readString(screen) + "\n" + Files.readString(story);
-        return null;
+        return content;
     }
 
     public String printChapterFour() throws IOException {
-        currentRoom = 4;
+        setCurrentRoom(4);
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterFourChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/threeDoors.txt");
         Path story = Path.of("resources/chapters/Chapter4.txt");
@@ -89,6 +89,7 @@ public class Game {
     }
 
     public String printShop() throws IOException {
+        setCurrentRoom(10);
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/shopChoices.txt"));
         Path screen = Path.of("resources/ascii/shop.txt");
         Path story = Path.of("resources/chapters/Shop.txt");
@@ -110,5 +111,9 @@ public class Game {
 
     public int getCurrentRoom() {
         return currentRoom;
+    }
+
+    public void setCurrentRoom(int currentRoom) {
+        this.currentRoom = currentRoom;
     }
 }
