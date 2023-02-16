@@ -40,39 +40,60 @@ public class Game {
         return content;
     }
 
-    public String printChapterThree(){
+    public String printChapterThree() throws IOException {
         currentRoom = 3;
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterThreeChoices.txt"));
-
+        Path screen = Path.of("resources/ascii/game_Screens/LeftRight.txt");
+        Path story = Path.of("resources/chapters/Chapter3.txt");
+        String content = Files.readString(screen) + "\n" + Files.readString(story);
         return null;
     }
 
-    public String printChapterFour(){
+    public String printChapterFour() throws IOException {
         currentRoom = 4;
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterFourChoices.txt"));
-
-        return null;
+        Path screen = Path.of("resources/ascii/game_Screens/threeDoors.txt");
+        Path story = Path.of("resources/chapters/Chapter4.txt");
+        String content = Files.readString(screen) + "\n" + Files.readString(story);
+        return content;
     }
 
-    public String printBattleOne(){
-
-        return null;
+    public String printBattleOne() throws IOException {
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
+        Path screen = Path.of("resources/ascii/game_Screens/bug.txt");
+        Path story = Path.of("resources/chapters/Battle1.txt");
+        String content = Files.readString(screen) + "\n" + Files.readString(story);
+        return content;
     }
 
-    public String printBattleTwo(){
+    public String printBattleTwo() throws IOException {
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
+        Path screen = Path.of("resources/ascii/game_Screens/elf.txt");
+        Path story = Path.of("resources/chapters/Battle2.txt");
+        String content = Files.readString(screen) + "\n" + Files.readString(story);
         return null;
     }
 
     public String printBattleThree(){
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
+
         return null;
     }
 
-    public String printFinalBattle(){
-        return null;
+    public String printFinalBattle() throws IOException {
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
+        Path screen = Path.of("resources/ascii/game_Screens/dragon.txt");
+        Path story = Path.of("resources/chapters/Chapter4.txt");
+        String content = Files.readString(screen) + "\n" + Files.readString(story);
+        return content;
     }
 
-    public String printShop(){
-        return null;
+    public String printShop() throws IOException {
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/shopChoices.txt"));
+        Path screen = Path.of("resources/ascii/shop.txt");
+        Path story = Path.of("resources/chapters/Shop.txt");
+        String content = Files.readString(screen) + "\n" + Files.readString(story);
+        return content;
     }
 
     public String printChest(){

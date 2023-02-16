@@ -3,4 +3,4 @@ As you walk into the castle, you find a hallway with a door on each side.
 
                  ==== Where do you want to go? ====
 
-             LEFT              FORWARD             RIGHT
+             <L>EFT              <F>ORWARD             <R>IGHT
