@@ -24,7 +24,7 @@ public class Game {
 
     public String printChapterOne() throws IOException {
         setCurrentRoom(1);
-        System.out.println("Party is on room: " + getCurrentRoom());
+        System.out.println("Party is in room: " + getCurrentRoom());
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterOneChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/hallway_LeftRight.txt");
@@ -35,7 +35,7 @@ public class Game {
 
     public String printChapterTwo() throws IOException {
         setCurrentRoom(2);
-        System.out.println("Party is on room: " + getCurrentRoom());
+        System.out.println("Party is in room: " + getCurrentRoom());
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterTwoChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/LeftRight.txt");
@@ -46,7 +46,7 @@ public class Game {
 
     public String printChapterThree() throws IOException {
         setCurrentRoom(3);
-        System.out.println("Party is on room: " + getCurrentRoom());
+        System.out.println("Party is in room: " + getCurrentRoom());
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterThreeChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/LeftRight.txt");
@@ -57,7 +57,7 @@ public class Game {
 
     public String printChapterFour() throws IOException {
         setCurrentRoom(4);
-        System.out.println("Party is on room: " + getCurrentRoom());
+        System.out.println("Party is in room: " + getCurrentRoom());
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterFourChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/threeDoors.txt");
