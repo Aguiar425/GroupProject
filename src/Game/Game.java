@@ -11,11 +11,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Game {
     private static int currentRoom;
     private boolean inCombat;
     private List party;
+    private Set partySet;
     private int gold;
 
     private Monster[] allMonsters;
@@ -40,6 +42,7 @@ public class Game {
         this.shopHasKey = true;
         this.shopHasPotionOne = true;
         this.shopHasPotionTwo = true;
+        this.partySet = (Set) party;
 
     }
 
@@ -207,7 +210,7 @@ public class Game {
         this.currentRoom = currentRoom;
     }
 
-    public List getParty() {
+    public List<PlayerCharacter> getParty() {
         return party;
     }
 
@@ -250,5 +253,9 @@ public class Game {
 
 
         return null;
+    }
+
+    public Set getPartySet() {
+        return partySet;
     }
 }

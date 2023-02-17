@@ -1,9 +1,11 @@
 package Game;
 
 import gameObjects.CharacterClasses;
+import gameObjects.PlayerCharacter;
 import messages.Colors;
 import messages.Messages;
 import messages.commands.Commands;
+import messages.commands.battleCommands.BattleCommands;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -146,7 +148,7 @@ public class GameServer {
                     occupied = true;
                     if (game.isInCombat()) {
                         if (!alreadyAttacked) {
-                            dealWithCommand(msgReceived);
+                            dealWithBattle(msgReceived, user);
                             this.alreadyAttacked = true;
                         } else {
                             writeAndSend(socket, Messages.YOU_ALREADY_ATTACKED);
@@ -212,8 +214,23 @@ public class GameServer {
             broadcastMessage("NO SUCH COMMAND EXISTS");
             return;
         }
-
         command.getHandler().execute(GameServer.this, this.game);
+    }
+
+    private void dealWithBattle(String message, String name) throws IOException {
+        String description = message.split(" ")[0];
+        BattleCommands command = BattleCommands.getCommand(description);
+
+        if (command == null) {
+            broadcastMessage("NO SUCH COMMAND EXISTS");
+            return;
+        }
+        for (PlayerCharacter pc : game.getParty()) {
+            if (pc.getName().equals(name)) {
+                command.getHandler().execute(GameServer.this, this.game, pc);
+                return;
+            }
+        }
     }
 
     public HashMap<String, Socket> getClientMap() {
