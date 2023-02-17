@@ -5,11 +5,12 @@ import Game.GameServer;
 import gameObjects.PlayerCharacter;
 
 public class AttackCommand implements CommandHandler, BattleCommand {
-    
+    int damage;
+
     @Override
     public void execute(GameServer server, Game game) {
         if (game.isInCombat()) {
-            game.getAllMonsters().setHitpoints(game.getAllMonsters().getHitpoints() - player.getDamage());
+            game.getAllMonsters().setHitpoints(game.getAllMonsters().getHitpoints() - damage);
         } else {
 
         }
@@ -17,6 +18,6 @@ public class AttackCommand implements CommandHandler, BattleCommand {
 
     @Override
     public void execute(PlayerCharacter character) {
-
+        damage = character.getDamage();
     }
 }
