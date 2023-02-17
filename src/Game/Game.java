@@ -126,7 +126,6 @@ public class Game {
             Path story = Path.of("resources/chapters/Battle1.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
 
-            startThread(allMonsters[0]);
             return content;
         }
     }
@@ -266,27 +265,5 @@ public class Game {
         PlayerCharacter target = (PlayerCharacter) party.get(0);
         target.setHitpoints(target.getHitpoints() - monster.getMaxDamage());
         System.out.println("dealt " + monster.getMaxDamage() + "to " + target.getName());
-    }
-
-    public void monsterThread(ExecutorService threadFactory, Monster monster) {
-        threadFactory.submit(new Thread(() -> {
-            synchronized (this) {
-                while (getAllMonsters().getAlive()) {
-                    System.out.println("prep attack");
-                    monsterAttack(monster);
-                    System.out.println("after attack");
-                    this.notifyAll();
-                    try {
-                        this.wait();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }));
-    }
-
-    public void startThread(Monster monster) {
-        monsterThread(threadFactory, monster);
     }
 }
