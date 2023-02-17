@@ -1,5 +1,6 @@
 package Game;
 
+import gameObjects.CharacterClasses;
 import messages.Colors;
 import messages.Messages;
 import messages.commands.Commands;
@@ -38,6 +39,7 @@ public class GameServer {
                 System.out.println("Please insert a valid number");
             }
         }
+
         try {
             serverSocket = new ServerSocket(8080);
 
@@ -50,6 +52,40 @@ public class GameServer {
 
                 String userName = consoleInput.readLine();
                 clientMap.put(userName, clientSocket);
+
+                writeAndSend(clientSocket, Colors.YELLOW + Messages.ASK_FOR_CLASS + Colors.RESET);
+                writeAndSend(clientSocket, Messages.AVAILABLE_CLASSES);
+                String playerClass = consoleInput.readLine().toString();
+
+               while (true){
+                   if(playerClass.equals("R")){
+                       game.createCharacter(userName, CharacterClasses.ROGUE);
+                       break;
+                   } else if (playerClass.equals("W")) {
+                       game.createCharacter(userName, CharacterClasses.WARRIOR);
+                       break;
+                   } else if (playerClass.equals("M")) {
+                       game.createCharacter(userName, CharacterClasses.MAGE);
+                       break;
+                   } else {
+                       writeAndSend(clientSocket, Colors.YELLOW +Messages.INVALID_INPUT + Colors.RESET);
+                       playerClass = consoleInput.readLine().toString();
+                   }
+               }
+
+               /* while(!playerClass.equals("R") || !playerClass.equals("W") || !playerClass.equals("M")){
+                    writeAndSend(clientSocket, Colors.YELLOW +Messages.INVALID_INPUT + Colors.RESET);
+                    playerClass = consoleInput.readLine().toString();
+                    }
+
+                switch (playerClass.toString()){
+                    case "R":
+                        game.createCharacter(userName, CharacterClasses.ROGUE);
+                    case "W":
+                        game.createCharacter(userName, CharacterClasses.WARRIOR);
+                    case "M":
+                        game.createCharacter(userName, CharacterClasses.MAGE);
+                }*/
 
                 totalPlayers++;
 

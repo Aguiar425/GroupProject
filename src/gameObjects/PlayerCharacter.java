@@ -1,6 +1,6 @@
 package gameObjects;
 
-public class Character {
+public class PlayerCharacter {
 
     private CharacterClasses characterClass;
     private String name;
@@ -8,11 +8,19 @@ public class Character {
     private int damage;
     private Boolean isLeader;
 
-    public Character(CharacterClasses characterClass, String name) {
+    public PlayerCharacter(CharacterClasses characterClass, String name) {
         this.characterClass = characterClass;
         this.name = name;
         this.hitpoints = characterClass.getStartingHitpoints();
         this.damage = characterClass.getStartingDamage();
+        this.isLeader = false;
+    }
+
+    public PlayerCharacter() {
+        this.characterClass = null;
+        this.name = null;
+        this.hitpoints = 0;
+        this.damage = 0;
         this.isLeader = false;
     }
 
@@ -38,5 +46,21 @@ public class Character {
 
     public void setLeader(Boolean leader) {
         isLeader = leader;
+    }
+
+    public CharacterClasses getCharacterClass() {
+        return characterClass;
+    }
+
+    public void setCharacterClass(CharacterClasses characterClass) {
+        this.characterClass = characterClass;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

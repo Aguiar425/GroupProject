@@ -1,5 +1,7 @@
 package messages;
 
+import java.awt.*;
+
 public abstract class Messages {
     public static final String GAME_STARTED = "Game.Game started";
     public static final String BATTLE_STARTED = "The party has encountered a %s";
@@ -16,6 +18,9 @@ public abstract class Messages {
     public static final String BATTLE = "GAME OVER! Your journey ends here";
     public static final String USER_LEFT = "%s has cowardly abandoned the party...";
     public static final String ASK_FOR_USERNAME = "What is your character's name?";
+    public static final String ASK_FOR_CLASS = "What is your class?";
+    public static final String AVAILABLE_CLASSES = Colors.PINK + "<R>ogue        " + Colors.RED + "<W>arrior         "  +Colors.BLUE + "<M>age";
+    public static final String INVALID_INPUT = "Please insert a valid input";
     public static final String USER_JOINED = "%s has joined the party. Waiting for more players...";
     public static final String PLAYER_LIMIT = "The adventuring party is full";
 }

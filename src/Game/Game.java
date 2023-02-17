@@ -1,15 +1,24 @@
 package Game;
 
+import gameObjects.CharacterClasses;
+import gameObjects.PlayerCharacter;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Game {
     private static int currentRoom;
     private boolean inCombat;
+    private List party;
+    private int gold;
 
     public Game() {
         this.inCombat = false;
+        this.party = new ArrayList<PlayerCharacter>();
+        this.gold = 50;
     }
 
     public String startGame() throws IOException {
@@ -125,6 +134,23 @@ public class Game {
 
     public void setCurrentRoom(int currentRoom) {
         this.currentRoom = currentRoom;
+    }
+
+    public List getParty() {
+        return party;
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public void setGold(int gold) {
+        this.gold = gold;
+    }
+
+    public void createCharacter(String name, CharacterClasses classChoice){
+        PlayerCharacter pc = new PlayerCharacter(classChoice, name);
+        party.add(pc);
     }
 
     public void something() {

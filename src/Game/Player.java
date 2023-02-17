@@ -1,5 +1,6 @@
 package Game;
 
+import gameObjects.PlayerCharacter;
 import messages.Colors;
 
 import java.io.*;
@@ -9,10 +10,11 @@ import java.util.concurrent.Executors;
 
 public class Player {
 
-    Character character;
+    PlayerCharacter character;
 
-    public static void main(String[] args) {
+    public Player() {
         Socket socket = null;
+        this.character = new PlayerCharacter();
         try {
             socket = new Socket("localhost", 8080);
             BufferedReader consoleInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
