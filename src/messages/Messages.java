@@ -23,4 +23,5 @@ public abstract class Messages {
     public static final String INVALID_INPUT = "Please insert a valid input";
     public static final String USER_JOINED = "%s has joined the party. Waiting for more players...";
     public static final String PLAYER_LIMIT = "The adventuring party is full";
+    public static final String NOT_ENOUGH_GOLD = "Not enough gold to buy this item";
 }

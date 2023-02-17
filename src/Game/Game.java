@@ -4,6 +4,7 @@ import gameObjects.CharacterClasses;
 import gameObjects.Monster;
 import gameObjects.MonsterClasses;
 import gameObjects.PlayerCharacter;
+import messages.Messages;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,6 +25,10 @@ public class Game {
     private Boolean battleThreeComplete;
     private Boolean battleFinalComplete;
 
+    private Boolean shopHasKey;
+    private Boolean shopHasPotionOne;
+    private Boolean shopHasPotionTwo;
+
     public Game() {
         this.inCombat = false;
         this.party = new ArrayList<PlayerCharacter>();
@@ -32,6 +37,9 @@ public class Game {
         this.battleTwoComplete = false;
         this.battleThreeComplete = false;
         this.battleFinalComplete = false;
+        this.shopHasKey = true;
+        this.shopHasPotionOne = true;
+        this.shopHasPotionTwo = true;
 
     }
 
@@ -93,27 +101,44 @@ public class Game {
         if(battleOneComplete){
             GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterOneChoices.txt"));
             Path screen = Path.of("resources/ascii/skull.txt");
-        }
-        allMonsters[0] = new Monster(MonsterClasses.BUG);
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
-        Path screen = Path.of("resources/ascii/game_Screens/bug.txt");
-        Path story = Path.of("resources/chapters/Battle1.txt");
-        String content = Files.readString(screen) + "\n" + Files.readString(story);
-        return content;
+            Path story = Path.of("resources/chapters/Battle1_Complete.txt");
+            String content = Files.readString(screen) + "\n" + Files.readString(story);
+            return content;
+        }else
+            allMonsters[0] = new Monster(MonsterClasses.BUG);
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
+            Path screen = Path.of("resources/ascii/game_Screens/bug.txt");
+            Path story = Path.of("resources/chapters/Battle1.txt");
+            String content = Files.readString(screen) + "\n" + Files.readString(story);
+            return content;
     }
 
     public String printBattleTwo() throws IOException {
-        allMonsters[1] = new Monster(MonsterClasses.ELF);
+        if(battleTwoComplete){
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterTwoChoices.txt"));
+            Path screen = Path.of("resources/ascii/skull.txt");
+            Path story = Path.of("resources/chapters/Battle2_Complete.txt");
+            String content = Files.readString(screen) + "\n" + Files.readString(story);
+            return content;
+        }else
+            allMonsters[1] = new Monster(MonsterClasses.ELF);
 
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
-        Path screen = Path.of("resources/ascii/game_Screens/elf.txt");
-        Path story = Path.of("resources/chapters/Battle2.txt");
-        String content = Files.readString(screen) + "\n" + Files.readString(story);
-        return null;
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
+            Path screen = Path.of("resources/ascii/game_Screens/elf.txt");
+            Path story = Path.of("resources/chapters/Battle2.txt");
+            String content = Files.readString(screen) + "\n" + Files.readString(story);
+            return content;
     }
 
     public String printBattleThree() throws IOException {
-        allMonsters[2] = new Monster(MonsterClasses.GRIFFIN);
+        if(battleThreeComplete){
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterThreeChoices.txt"));
+            Path screen = Path.of("resources/ascii/skull.txt");
+            Path story = Path.of("resources/chapters/Battle3_Complete.txt");
+            String content = Files.readString(screen) + "\n" + Files.readString(story);
+            return content;
+        }else
+            allMonsters[2] = new Monster(MonsterClasses.GRIFFIN);
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/griffin.txt");
@@ -126,7 +151,7 @@ public class Game {
         allMonsters[3] = new Monster(MonsterClasses.FINAL);
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/dragon.txt");
-        Path story = Path.of("resources/chapters/Chapter4.txt");
+        Path story = Path.of("resources/chapters/BattleFinal.txt");
         String content = Files.readString(screen) + "\n" + Files.readString(story);
         return content;
     }
@@ -172,6 +197,15 @@ public class Game {
 
     public void setGold(int gold) {
         this.gold = gold;
+    }
+
+    //TODO broadcast the message to the players - return String?
+    public void buyKey(){
+        if(gold < 75){
+            System.out.println(Messages.NOT_ENOUGH_GOLD);
+        }else{
+            shopHasKey = false;
+        }
     }
 
     public void createCharacter(String name, CharacterClasses classChoice) {
