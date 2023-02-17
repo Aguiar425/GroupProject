@@ -1,3 +1,4 @@
-@A,
-@D,
-@H,
+@attack,playerAttack
+@defend,playerDefend
+@heal,playerHeal
+@run,playerRun

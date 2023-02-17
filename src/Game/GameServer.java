@@ -22,6 +22,7 @@ public class GameServer {
     private static HashMap<String, String> playerChoices = new HashMap<>();
     private static int playerLimit;
     private static Game game;
+    private static boolean occupied = false;
 
     public GameServer() {
         game = new Game();
@@ -56,36 +57,7 @@ public class GameServer {
                 writeAndSend(clientSocket, Colors.YELLOW + Messages.ASK_FOR_CLASS + Colors.RESET);
                 writeAndSend(clientSocket, Messages.AVAILABLE_CLASSES);
                 String playerClass = consoleInput.readLine().toString();
-
-               while (true){
-                   if(playerClass.equals("R")){
-                       game.createCharacter(userName, CharacterClasses.ROGUE);
-                       break;
-                   } else if (playerClass.equals("W")) {
-                       game.createCharacter(userName, CharacterClasses.WARRIOR);
-                       break;
-                   } else if (playerClass.equals("M")) {
-                       game.createCharacter(userName, CharacterClasses.MAGE);
-                       break;
-                   } else {
-                       writeAndSend(clientSocket, Colors.YELLOW +Messages.INVALID_INPUT + Colors.RESET);
-                       playerClass = consoleInput.readLine().toString();
-                   }
-               }
-
-               /* while(!playerClass.equals("R") || !playerClass.equals("W") || !playerClass.equals("M")){
-                    writeAndSend(clientSocket, Colors.YELLOW +Messages.INVALID_INPUT + Colors.RESET);
-                    playerClass = consoleInput.readLine().toString();
-                    }
-
-                switch (playerClass.toString()){
-                    case "R":
-                        game.createCharacter(userName, CharacterClasses.ROGUE);
-                    case "W":
-                        game.createCharacter(userName, CharacterClasses.WARRIOR);
-                    case "M":
-                        game.createCharacter(userName, CharacterClasses.MAGE);
-                }*/
+                classChoice(clientSocket, consoleInput, userName, playerClass);
 
                 totalPlayers++;
 
@@ -120,6 +92,24 @@ public class GameServer {
         GameServer.playerChoices = playerChoices;
     }
 
+    private void classChoice(Socket clientSocket, BufferedReader consoleInput, String userName, String playerClass) throws IOException {
+        while (true) {
+            if (playerClass.equals("R")) {
+                game.createCharacter(userName, CharacterClasses.ROGUE);
+                break;
+            } else if (playerClass.equals("W")) {
+                game.createCharacter(userName, CharacterClasses.WARRIOR);
+                break;
+            } else if (playerClass.equals("M")) {
+                game.createCharacter(userName, CharacterClasses.MAGE);
+                break;
+            } else {
+                writeAndSend(clientSocket, Colors.YELLOW + Messages.INVALID_INPUT + Colors.RESET);
+                playerClass = consoleInput.readLine().toString();
+            }
+        }
+    }
+
     private void choicesSetup(String path) {
         playerChoices = PlayerChoices.playerChoices(path);
     }
@@ -128,7 +118,7 @@ public class GameServer {
         threadFactory.submit(new Thread(() -> {
             try {
                 playerThread(userName, clientSocket, clientMap);
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }));
@@ -143,25 +133,36 @@ public class GameServer {
         //BufferedReader input = new BufferedReader(new InputStreamReader(socket.GetInputStream()));
     }
 
-    private void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException {
+    private void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException, InterruptedException {
         System.out.println(Colors.RED + clientMap + Colors.RESET);
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String msgReceived;
 
         while ((msgReceived = inputReader.readLine()) != null) {
-            if (msgReceived.startsWith("/")) {
-                dealWithCommand(msgReceived);
-            } else if (msgReceived.startsWith("@")) {
-                for (Map.Entry<String, String> set : playerChoices.entrySet()) {
-                    if (set.getKey().equals(msgReceived)) {
-                        stringToMethod(set.getValue());
+            if (!occupied) {
+                if (msgReceived.startsWith("/")) {
+                    occupied = true;
+                    dealWithCommand(msgReceived);
+                    Thread.sleep(5000);
+                    occupied = false;
+                } else if (msgReceived.startsWith("@")) {
+                    occupied = true;
+                    for (Map.Entry<String, String> set : playerChoices.entrySet()) {
+                        if (set.getKey().equals(msgReceived)) {
+                            stringToMethod(set.getValue());
 
+                        }
                     }
+                    Thread.sleep(5000);
+                    occupied = false;
+                } else {
+                    broadcastMessage(user + ": " + msgReceived);
                 }
             } else {
-                broadcastMessage(user + ": " + msgReceived);
+                writeAndSend(socket, Messages.NO_SPAM);
             }
         }
+
         clientMap.remove(user, socket);
         System.out.printf(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
         broadcastMessage(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
