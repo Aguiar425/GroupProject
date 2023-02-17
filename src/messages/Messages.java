@@ -22,4 +22,6 @@ public abstract class Messages {
     public static final String USER_JOINED = "%s has joined the party. Waiting for more players...";
     public static final String PLAYER_LIMIT = "The adventuring party is full";
     public static final String NO_SPAM = Colors.RED + "Too many inputs, wait a few seconds!" + Colors.RESET;
+    public static final String NOT_ENOUGH_GOLD = "Not enough gold to buy this item";
+    public static final String YOU_ALREADY_ATTACKED = Colors.RED + "You already attacked this turn!" + Colors.RESET;
 }
