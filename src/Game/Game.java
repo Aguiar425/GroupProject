@@ -148,7 +148,7 @@ public class Game {
         this.gold = gold;
     }
 
-    public void createCharacter(String name, CharacterClasses classChoice){
+    public void createCharacter(String name, CharacterClasses classChoice) {
         PlayerCharacter pc = new PlayerCharacter(classChoice, name);
         party.add(pc);
     }
@@ -156,4 +156,21 @@ public class Game {
     public void something() {
         System.out.println("something");
     }
+
+    public void playerAttack() {
+
+    }
+
+    public void playerDefend() {
+
+    }
+
+    public void playerHeal() {
+
+    }
+
+    public void playerRun() {
+
+    }
+
 }
