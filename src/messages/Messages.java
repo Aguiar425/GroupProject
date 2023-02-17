@@ -1,7 +1,5 @@
 package messages;
 
-import java.awt.*;
-
 public abstract class Messages {
     public static final String GAME_STARTED = "Game.Game started";
     public static final String BATTLE_STARTED = "The party has encountered a %s";
@@ -25,4 +23,5 @@ public abstract class Messages {
     public static final String PLAYER_LIMIT = "The adventuring party is full";
     public static final String NO_SPAM = Colors.RED + "Too many inputs, wait a few seconds!" + Colors.RESET;
     public static final String NOT_ENOUGH_GOLD = "Not enough gold to buy this item";
+    public static final String YOU_ALREADY_ATTACKED = Colors.RED + "You already attacked this turn!" + Colors.RESET;
 }

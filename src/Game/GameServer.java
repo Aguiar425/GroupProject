@@ -23,6 +23,7 @@ public class GameServer {
     private static int playerLimit;
     private static Game game;
     private static boolean occupied = false;
+    boolean alreadyAttacked = false;
 
     public GameServer() {
         game = new Game();
@@ -138,12 +139,22 @@ public class GameServer {
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String msgReceived;
 
+
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
                     occupied = true;
-                    dealWithCommand(msgReceived);
-                    Thread.sleep(5000);
+                    if (game.isInCombat()) {
+                        if (!alreadyAttacked) {
+                            dealWithCommand(msgReceived);
+                            this.alreadyAttacked = true;
+                        } else {
+                            writeAndSend(socket, Messages.YOU_ALREADY_ATTACKED);
+                        }
+                    } else {
+                        dealWithCommand(msgReceived);
+                    }
+                    Thread.sleep(3000);
                     occupied = false;
                 } else if (msgReceived.startsWith("@")) {
                     occupied = true;
@@ -153,7 +164,7 @@ public class GameServer {
 
                         }
                     }
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                     occupied = false;
                 } else {
                     broadcastMessage(user + ": " + msgReceived);
@@ -193,10 +204,6 @@ public class GameServer {
         }
     }
 
-    public HashMap<String, Socket> getClientMap() {
-        return clientMap;
-    }
-
     private void dealWithCommand(String message) throws IOException {
         String description = message.split(" ")[0];
         Commands command = Commands.getCommand(description);
@@ -207,6 +214,10 @@ public class GameServer {
         }
 
         command.getHandler().execute(GameServer.this, this.game);
+    }
+
+    public HashMap<String, Socket> getClientMap() {
+        return clientMap;
     }
 
 }

@@ -98,29 +98,37 @@ public class Game {
     }
 
     public String printBattleOne() throws IOException {
-        if(battleOneComplete){
+        if (battleOneComplete) {
+            setCurrentRoom(21);
             GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterOneChoices.txt"));
             Path screen = Path.of("resources/ascii/skull.txt");
             Path story = Path.of("resources/chapters/Battle1_Complete.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
-        }else
+        } else {
+            inCombat = true;
+            setCurrentRoom(21);
             allMonsters[0] = new Monster(MonsterClasses.BUG);
+
             GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
             Path screen = Path.of("resources/ascii/game_Screens/bug.txt");
             Path story = Path.of("resources/chapters/Battle1.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
+        }
     }
 
     public String printBattleTwo() throws IOException {
-        if(battleTwoComplete){
+        if (battleTwoComplete) {
+            setCurrentRoom(22);
             GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterTwoChoices.txt"));
             Path screen = Path.of("resources/ascii/skull.txt");
             Path story = Path.of("resources/chapters/Battle2_Complete.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
-        }else
+        } else {
+            inCombat = true;
+            setCurrentRoom(22);
             allMonsters[1] = new Monster(MonsterClasses.ELF);
 
             GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
@@ -128,27 +136,35 @@ public class Game {
             Path story = Path.of("resources/chapters/Battle2.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
+        }
     }
 
     public String printBattleThree() throws IOException {
-        if(battleThreeComplete){
+        if (battleThreeComplete) {
+            setCurrentRoom(23);
             GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterThreeChoices.txt"));
             Path screen = Path.of("resources/ascii/skull.txt");
             Path story = Path.of("resources/chapters/Battle3_Complete.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
-        }else
+        } else {
+            inCombat = true;
+            setCurrentRoom(23);
             allMonsters[2] = new Monster(MonsterClasses.GRIFFIN);
 
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
-        Path screen = Path.of("resources/ascii/game_Screens/griffin.txt");
-        Path story = Path.of("resources/chapters/Battle3.txt");
-        String content = Files.readString(screen) + "\n" + Files.readString(story);
-        return content;
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
+            Path screen = Path.of("resources/ascii/game_Screens/griffin.txt");
+            Path story = Path.of("resources/chapters/Battle3.txt");
+            String content = Files.readString(screen) + "\n" + Files.readString(story);
+            return content;
+        }
     }
 
     public String printFinalBattle() throws IOException {
+        inCombat = true;
+        setCurrentRoom(24);
         allMonsters[3] = new Monster(MonsterClasses.FINAL);
+
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/dragon.txt");
         Path story = Path.of("resources/chapters/BattleFinal.txt");
@@ -179,6 +195,10 @@ public class Game {
         return inCombat;
     }
 
+    public void setInCombat(boolean inCombat) {
+        this.inCombat = inCombat;
+    }
+
     public int getCurrentRoom() {
         return currentRoom;
     }
@@ -200,10 +220,10 @@ public class Game {
     }
 
     //TODO broadcast the message to the players - return String?
-    public void buyKey(){
-        if(gold < 75){
+    public void buyKey() {
+        if (gold < 75) {
             System.out.println(Messages.NOT_ENOUGH_GOLD);
-        }else{
+        } else {
             shopHasKey = false;
         }
     }
@@ -213,24 +233,22 @@ public class Game {
         party.add(pc);
     }
 
-    public void something() {
-        System.out.println("something");
+    public Monster getAllMonsters() {
+        if (currentRoom == 21) {
+            return allMonsters[0];
+        } else if (currentRoom == 22) {
+            return allMonsters[1];
+        } else if (currentRoom == 23) {
+            return allMonsters[2];
+        } else {
+            return allMonsters[3];
+        }
     }
 
-    public void playerAttack(int target, int damage) {
-        allMonsters[target].setHitpoints(allMonsters[target].getHitpoints() - damage);
+    public String printVictory() {
+        inCombat = false;
+
+
+        return null;
     }
-
-    public void playerDefend() {
-
-    }
-
-    public void playerHeal() {
-
-    }
-
-    public void playerRun() {
-
-    }
-
 }
