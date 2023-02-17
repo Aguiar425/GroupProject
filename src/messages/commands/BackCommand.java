@@ -33,7 +33,7 @@ public class BackCommand implements CommandHandler {
                 server.broadcastMessage(game.printChapterTwo());
                 game.setCurrentRoom(2);
             } else {
-                System.out.println(game.getCurrentRoom());
+                System.out.println("Party tried to leave room: " + game.getCurrentRoom() + "KEK");
                 server.broadcastMessage(Colors.RED + "You can't go back, there is no escape".toUpperCase() + Colors.RESET);
             }
         } catch (IOException e) {
