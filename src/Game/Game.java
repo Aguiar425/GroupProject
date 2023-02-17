@@ -2,6 +2,7 @@ package Game;
 
 import gameObjects.CharacterClasses;
 import gameObjects.Monster;
+import gameObjects.MonsterClasses;
 import gameObjects.PlayerCharacter;
 
 import java.io.IOException;
@@ -90,8 +91,10 @@ public class Game {
 
     public String printBattleOne() throws IOException {
         if(battleOneComplete){
-
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterOneChoices.txt"));
+            Path screen = Path.of("resources/ascii/skull.txt");
         }
+        allMonsters[0] = new Monster(MonsterClasses.BUG);
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/bug.txt");
         Path story = Path.of("resources/chapters/Battle1.txt");
@@ -100,6 +103,8 @@ public class Game {
     }
 
     public String printBattleTwo() throws IOException {
+        allMonsters[1] = new Monster(MonsterClasses.ELF);
+
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/elf.txt");
         Path story = Path.of("resources/chapters/Battle2.txt");
@@ -108,6 +113,8 @@ public class Game {
     }
 
     public String printBattleThree() throws IOException {
+        allMonsters[2] = new Monster(MonsterClasses.GRIFFIN);
+
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/griffin.txt");
         Path story = Path.of("resources/chapters/Battle3.txt");
@@ -116,6 +123,7 @@ public class Game {
     }
 
     public String printFinalBattle() throws IOException {
+        allMonsters[3] = new Monster(MonsterClasses.FINAL);
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/dragon.txt");
         Path story = Path.of("resources/chapters/Chapter4.txt");
@@ -175,8 +183,8 @@ public class Game {
         System.out.println("something");
     }
 
-    public void playerAttack(int damage) {
-        battleOne.setHitpoints(battleOne.getHitpoints()-damage);
+    public void playerAttack(int target, int damage) {
+        allMonsters[target].setHitpoints(allMonsters[target].getHitpoints() - damage);
     }
 
     public void playerDefend() {
