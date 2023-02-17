@@ -82,7 +82,7 @@ public class GameServer {
                     broadcastMessage(game.startGame());
                     choicesSetup("resources/chapters/choices/chapterOneChoices.txt");
                     createThread(threadFactory, clientSocket, userName);
-
+                    monsterThread(threadFactory);
                 } else {
                     System.out.println(Messages.PLAYER_LIMIT);
                 }
@@ -128,10 +128,16 @@ public class GameServer {
         }));
     }
 
-    public void monsterThread(ExecutorService thread, Monster monster) {
-        thread.submit(new Thread(() -> {
+    public void monsterThread(ExecutorService threadFactory) {
+        Thread t = new Thread(() -> {
             synchronized (this) {
-                while (game.getAllMonsters().getAlive()) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                while (true) {
+                    Monster monster = game.getAllMonsters();
                     System.out.println("prep attack");
                     game.monsterAttack(monster);
                     System.out.println("after attack");
@@ -142,8 +148,10 @@ public class GameServer {
                         throw new RuntimeException(e);
                     }
                 }
+
             }
-        }));
+        });
+        threadFactory.submit(t);
     }
 
     private void printMainMenu() throws IOException {
@@ -165,9 +173,10 @@ public class GameServer {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
                     if (game.isInCombat()) {
-                        synchronized (game) {
+                        synchronized (this) {
                             dealWithBattle(msgReceived, user);
-                            game.wait();
+                            this.notifyAll();
+                            this.wait();
                         }
                     } else {
                         occupied = true;
