@@ -12,28 +12,30 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Game {
     private static int currentRoom;
-    private boolean inCombat;
+    private static boolean inCombat;
+    ExecutorService threadFactory;
     private List party;
     private Set partySet;
     private int gold;
-
     private Monster[] allMonsters;
-
     private Boolean battleOneComplete;
     private Boolean battleTwoComplete;
     private Boolean battleThreeComplete;
     private Boolean battleFinalComplete;
-
     private Boolean shopHasKey;
     private Boolean shopHasPotionOne;
     private Boolean shopHasPotionTwo;
 
     public Game() {
+        this.threadFactory = Executors.newCachedThreadPool();
         this.inCombat = false;
         this.party = new ArrayList<PlayerCharacter>();
+        this.allMonsters = new Monster[4];
         this.gold = 50;
         this.battleOneComplete = false;
         this.battleTwoComplete = false;
@@ -42,12 +44,20 @@ public class Game {
         this.shopHasKey = true;
         this.shopHasPotionOne = true;
         this.shopHasPotionTwo = true;
-        this.partySet = (Set) party;
 
     }
 
     public String startGame() throws IOException {
+        populateMonsters();
         return printChapterOne();
+    }
+
+    public void populateMonsters() {
+        allMonsters[0] = new Monster(MonsterClasses.BUG);
+        allMonsters[1] = new Monster(MonsterClasses.ELF);
+        allMonsters[2] = new Monster(MonsterClasses.GRIFFIN);
+        allMonsters[3] = new Monster(MonsterClasses.FINAL);
+
     }
 
     public String printChapterZero() throws IOException {
@@ -111,12 +121,12 @@ public class Game {
         } else {
             inCombat = true;
             setCurrentRoom(21);
-            allMonsters[0] = new Monster(MonsterClasses.BUG);
 
-            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
             Path screen = Path.of("resources/ascii/game_Screens/bug.txt");
             Path story = Path.of("resources/chapters/Battle1.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
+
+            startThread(allMonsters[0]);
             return content;
         }
     }
@@ -132,7 +142,6 @@ public class Game {
         } else {
             inCombat = true;
             setCurrentRoom(22);
-            allMonsters[1] = new Monster(MonsterClasses.ELF);
 
             GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
             Path screen = Path.of("resources/ascii/game_Screens/elf.txt");
@@ -153,7 +162,6 @@ public class Game {
         } else {
             inCombat = true;
             setCurrentRoom(23);
-            allMonsters[2] = new Monster(MonsterClasses.GRIFFIN);
 
             GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
             Path screen = Path.of("resources/ascii/game_Screens/griffin.txt");
@@ -166,7 +174,6 @@ public class Game {
     public String printFinalBattle() throws IOException {
         inCombat = true;
         setCurrentRoom(24);
-        allMonsters[3] = new Monster(MonsterClasses.FINAL);
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/dragon.txt");
@@ -255,7 +262,31 @@ public class Game {
         return null;
     }
 
-    public Set getPartySet() {
-        return partySet;
+    public void monsterAttack(Monster monster) {
+        PlayerCharacter target = (PlayerCharacter) party.get(0);
+        target.setHitpoints(target.getHitpoints() - monster.getMaxDamage());
+        System.out.println("dealt " + monster.getMaxDamage() + "to " + target.getName());
+    }
+
+    public void monsterThread(ExecutorService threadFactory, Monster monster) {
+        threadFactory.submit(new Thread(() -> {
+            synchronized (this) {
+                while (getAllMonsters().getAlive()) {
+                    System.out.println("prep attack");
+                    monsterAttack(monster);
+                    System.out.println("after attack");
+                    this.notifyAll();
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }));
+    }
+
+    public void startThread(Monster monster) {
+        monsterThread(threadFactory, monster);
     }
 }

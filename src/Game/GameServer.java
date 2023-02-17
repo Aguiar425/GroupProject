@@ -1,6 +1,7 @@
 package Game;
 
 import gameObjects.CharacterClasses;
+import gameObjects.Monster;
 import gameObjects.PlayerCharacter;
 import messages.Colors;
 import messages.Messages;
@@ -127,6 +128,24 @@ public class GameServer {
         }));
     }
 
+    public void monsterThread(ExecutorService thread, Monster monster) {
+        thread.submit(new Thread(() -> {
+            synchronized (this) {
+                while (game.getAllMonsters().getAlive()) {
+                    System.out.println("prep attack");
+                    game.monsterAttack(monster);
+                    System.out.println("after attack");
+                    this.notifyAll();
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }));
+    }
+
     private void printMainMenu() throws IOException {
         Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
         String content = Files.readString(filePath);
@@ -145,15 +164,13 @@ public class GameServer {
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
-                    occupied = true;
                     if (game.isInCombat()) {
-                        if (!alreadyAttacked) {
+                        synchronized (game) {
                             dealWithBattle(msgReceived, user);
-                            this.alreadyAttacked = true;
-                        } else {
-                            writeAndSend(socket, Messages.YOU_ALREADY_ATTACKED);
+                            game.wait();
                         }
                     } else {
+                        occupied = true;
                         dealWithCommand(msgReceived);
                     }
                     Thread.sleep(3000);
@@ -225,12 +242,18 @@ public class GameServer {
             broadcastMessage("NO SUCH COMMAND EXISTS");
             return;
         }
+
         for (PlayerCharacter pc : game.getParty()) {
             if (pc.getName().equals(name)) {
-                command.getHandler().execute(GameServer.this, this.game, pc);
+
+                command.getBattleHandler().execute(GameServer.this, this.game, pc);
                 return;
             }
         }
+    }
+
+    public void startCombat() {
+
     }
 
     public HashMap<String, Socket> getClientMap() {

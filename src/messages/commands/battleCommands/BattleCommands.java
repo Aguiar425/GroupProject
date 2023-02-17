@@ -25,7 +25,7 @@ public enum BattleCommands {
         return null;
     }
 
-    public BattleHandler getHandler() {
+    public BattleHandler getBattleHandler() {
         return command;
     }
 }
