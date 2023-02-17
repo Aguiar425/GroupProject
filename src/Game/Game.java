@@ -1,6 +1,7 @@
 package Game;
 
 import gameObjects.CharacterClasses;
+import gameObjects.Monster;
 import gameObjects.PlayerCharacter;
 
 import java.io.IOException;
@@ -15,10 +16,22 @@ public class Game {
     private List party;
     private int gold;
 
+    private Monster[] allMonsters;
+
+    private Boolean battleOneComplete;
+    private Boolean battleTwoComplete;
+    private Boolean battleThreeComplete;
+    private Boolean battleFinalComplete;
+
     public Game() {
         this.inCombat = false;
         this.party = new ArrayList<PlayerCharacter>();
         this.gold = 50;
+        this.battleOneComplete = false;
+        this.battleTwoComplete = false;
+        this.battleThreeComplete = false;
+        this.battleFinalComplete = false;
+
     }
 
     public String startGame() throws IOException {
@@ -76,6 +89,9 @@ public class Game {
     }
 
     public String printBattleOne() throws IOException {
+        if(battleOneComplete){
+
+        }
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
         Path screen = Path.of("resources/ascii/game_Screens/bug.txt");
         Path story = Path.of("resources/chapters/Battle1.txt");
@@ -91,10 +107,12 @@ public class Game {
         return null;
     }
 
-    public String printBattleThree() {
+    public String printBattleThree() throws IOException {
         GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
-
-        return null;
+        Path screen = Path.of("resources/ascii/game_Screens/griffin.txt");
+        Path story = Path.of("resources/chapters/Battle3.txt");
+        String content = Files.readString(screen) + "\n" + Files.readString(story);
+        return content;
     }
 
     public String printFinalBattle() throws IOException {
@@ -157,8 +175,8 @@ public class Game {
         System.out.println("something");
     }
 
-    public void playerAttack() {
-
+    public void playerAttack(int damage) {
+        battleOne.setHitpoints(battleOne.getHitpoints()-damage);
     }
 
     public void playerDefend() {
