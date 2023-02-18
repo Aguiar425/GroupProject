@@ -24,6 +24,7 @@ public class GameServer {
     private static HashMap<String, Socket> clientMap = new HashMap<>();
     private static HashMap<String, String> playerChoices = new HashMap<>();
     private static int playerLimit;
+    private static int playerTurn = 0;
     private static Game game;
     private static boolean occupied = false;
     boolean alreadyAttacked = false;
@@ -33,17 +34,7 @@ public class GameServer {
         ServerSocket serverSocket;
         int totalPlayers = 0;
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("How many players?");
-        while (true) {
-            try {
-                playerLimit = Integer.parseInt(scanner.nextLine());
-                System.out.println("Max player set to: " + playerLimit);
-                break;
-            } catch (NumberFormatException nfe) {
-                System.out.println("Please insert a valid number");
-            }
-        }
+        setPlayerNumber();
 
         try {
             serverSocket = new ServerSocket(8080);
@@ -70,7 +61,7 @@ public class GameServer {
 
                     System.out.println(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
 
-                    createThread(threadFactory, clientSocket, userName);
+                    createPlayerThread(threadFactory, clientSocket, userName);
                 } else if (totalPlayers == playerLimit) {
                     broadcastMessage(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     broadcastMessage(Colors.BLUE + Messages.GAME_STARTED + Colors.RESET);
@@ -81,7 +72,7 @@ public class GameServer {
                     printMainMenu(); //TODO new game selection
                     broadcastMessage(game.startGame());
                     choicesSetup("resources/chapters/choices/chapterOneChoices.txt");
-                    createThread(threadFactory, clientSocket, userName);
+                    createPlayerThread(threadFactory, clientSocket, userName);
                     monsterThread(threadFactory);
                 } else {
                     System.out.println(Messages.PLAYER_LIMIT);
@@ -89,6 +80,20 @@ public class GameServer {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void setPlayerNumber() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("How many players?");
+        while (true) {
+            try {
+                playerLimit = Integer.parseInt(scanner.nextLine());
+                System.out.println("Max player set to: " + playerLimit);
+                break;
+            } catch (NumberFormatException nfe) {
+                System.out.println("Please insert a valid number");
+            }
         }
     }
 
@@ -118,7 +123,7 @@ public class GameServer {
         playerChoices = PlayerChoices.playerChoices(path);
     }
 
-    private void createThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
+    private void createPlayerThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
         threadFactory.submit(new Thread(() -> {
             try {
                 playerThread(userName, clientSocket, clientMap);
@@ -126,6 +131,15 @@ public class GameServer {
                 throw new RuntimeException(e);
             }
         }));
+    }
+
+    private void printMainMenu() throws IOException {
+        Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
+        String content = Files.readString(filePath);
+        broadcastMessage(content);
+        //broadcastMessage(Colors.RED + "       <N>"+ Colors.RESET+"ew Game.Game                 " + Colors.RED + "<L>"+ Colors.RESET + "oad Game.Game");
+        //broadcastMessage(game.startGame());
+        //BufferedReader input = new BufferedReader(new InputStreamReader(socket.GetInputStream()));
     }
 
     public void monsterThread(ExecutorService threadFactory) {
@@ -141,6 +155,7 @@ public class GameServer {
                     System.out.println("prep attack");
                     game.monsterAttack(monster);
                     System.out.println("after attack");
+                    playerTurn = 0;
                     this.notifyAll();
                     try {
                         this.wait();
@@ -152,15 +167,6 @@ public class GameServer {
             }
         });
         threadFactory.submit(t);
-    }
-
-    private void printMainMenu() throws IOException {
-        Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
-        String content = Files.readString(filePath);
-        broadcastMessage(content);
-        //broadcastMessage(Colors.RED + "       <N>"+ Colors.RESET+"ew Game.Game                 " + Colors.RED + "<L>"+ Colors.RESET + "oad Game.Game");
-        //broadcastMessage(game.startGame());
-        //BufferedReader input = new BufferedReader(new InputStreamReader(socket.GetInputStream()));
     }
 
     private void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException, InterruptedException {
@@ -175,7 +181,10 @@ public class GameServer {
                     if (game.isInCombat()) {
                         synchronized (this) {
                             dealWithBattle(msgReceived, user);
-                            this.notifyAll();
+                            playerTurn++;
+                            if (playerTurn == playerLimit) {
+                                this.notifyAll();
+                            }
                             this.wait();
                         }
                     } else {
