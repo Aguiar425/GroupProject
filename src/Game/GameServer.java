@@ -162,6 +162,7 @@ public class GameServer {
                         Monster monster = game.getAllMonsters();
                         if (monster.getHitpoints() <= 0) {
                             monster.setAlive(false);
+                            game.setBattleOneComplete(true);
                         }
                         if (!monster.getAlive()) {
                             try {
@@ -232,7 +233,7 @@ public class GameServer {
                     occupied = true;
                     for (Map.Entry<String, String> set : playerChoices.entrySet()) {
                         if (set.getKey().equals(msgReceived)) {
-                            stringToMethod(set.getValue());
+                            stringToMethod(set.getValue(), game);
 
                         }
                     }
@@ -264,12 +265,12 @@ public class GameServer {
         outputName.flush();
     }
 
-    private void stringToMethod(String value) {
+    private void stringToMethod(String value, Game game) {
         try {
             Class<?> clazz = Game.class;
             Method method = clazz.getDeclaredMethod(value);
             Class<?> returnType = method.getReturnType();
-            broadcastMessage((String) method.invoke(clazz.newInstance()));
+            broadcastMessage((String) method.invoke(game));
         } catch (Exception e) {
             e.printStackTrace();
         }
