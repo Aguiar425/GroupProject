@@ -1,7 +1,7 @@
 package gameObjects;
 
 public enum CharacterClasses {
-    ROGUE(50, 3, 6),
+    ROGUE(50, 3, 12),
     WARRIOR(100, 5, 10),
     MAGE(30, 10, 15);
 
