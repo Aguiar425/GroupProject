@@ -18,19 +18,19 @@ public class Game {
     private static Boolean battleOneComplete;
     private static Boolean battleTwoComplete;
     private static Boolean battleThreeComplete;
-    private final String gameScreensDirectory = "resources/ascii/game_Screens/";
-    private final String gameChaptersDirectory = "resources/chapters/";
-    private final String gameChoicesDirectory = "resources/chapters/choices/";
-    ExecutorService threadFactory;
-    private List<PlayerCharacter> party;
     private static int gold;
     private static int healingPotions;
-    private final Monster[] allMonsters;
     //private Boolean battleFinalComplete;
     private static Boolean shopHasKey;
     private static int keyCounter;
     private static Boolean chestOneOpened;
     private static Boolean chestTwoOpened;
+    private final String gameScreensDirectory = "resources/ascii/game_Screens/";
+    private final String gameChaptersDirectory = "resources/chapters/";
+    private final String gameChoicesDirectory = "resources/chapters/choices/";
+    private final Monster[] allMonsters;
+    ExecutorService threadFactory;
+    private List<PlayerCharacter> party;
 
     public Game() {
         this.threadFactory = Executors.newCachedThreadPool();
@@ -61,9 +61,9 @@ public class Game {
         Game.battleThreeComplete = battleThreeComplete;
     }
 
-    public String startGame() throws IOException {
-        populateMonsters();
-        return printChapterOne();
+    public void createCharacter(String name, CharacterClasses classChoice) {
+        PlayerCharacter pc = new PlayerCharacter(classChoice, name);
+        party.add(pc);
     }
 
     public void populateMonsters() {
@@ -73,6 +73,12 @@ public class Game {
         allMonsters[3] = new Monster(MonsterClasses.FINAL);
     }
 
+    public String startGame() throws IOException {
+        populateMonsters(); //TODO CHANGE TO CHAPTER 0
+        return printChapterOne();
+    }
+
+    //THERE ARE THE METHODS FOR PRINTING THE DIFFERENT ROOMS
     public String printChapterZero() throws IOException { //TODO IMPLEMENT CHAPTER ZERO AND ADD DELAY BETWEEN SCREENS. MAYBE WAIT FOR ANY INPUT?
         Path filePath = Path.of(gameChaptersDirectory + "Chapter0.txt");
         return Files.readString(filePath);
@@ -88,6 +94,7 @@ public class Game {
         return Files.readString(screen) + "\n" + Files.readString(story);
     }
 
+    //THESE ARE THE METHODS TO PRINT THE BATTLE ROOMS
     public String printChapterTwo() throws IOException {
         setCurrentRoom(2);
         System.out.println("Party is in room: " + getCurrentRoom());
@@ -134,6 +141,7 @@ public class Game {
         }
     }
 
+    //THESE ARE THE METHODS TO PRINT THE SHOP AND CHEST ROOMS
     public String printBattleTwo() throws IOException {
         setCurrentRoom(22);
         if (battleTwoComplete) {
@@ -188,9 +196,37 @@ public class Game {
         return Files.readString(screen) + "\n" + Files.readString(story);
     }
 
+    public String buyKey() {
+        if (shopHasKey) {
+            if (gold < 75) {
+                System.out.println(Messages.NOT_ENOUGH_GOLD);
+                return Messages.NOT_ENOUGH_GOLD;
+            } else {
+                gold -= 75;
+                shopHasKey = false;
+                keyCounter++;
+                return Messages.KEY_BOUGHT;
+            }
+
+        } else {
+            return Messages.KEY_ALREADY_BOUGHT;
+        }
+    }
+
+    //THESE ARE GENERAL METHODS
+    public String buyPotion() {
+        if (gold < 25) {
+            return Messages.NOT_ENOUGH_GOLD;
+        } else {
+            gold -= 25;
+            healingPotions++;
+            return Messages.POTION_BOUGHT;
+        }
+    }
+
     public String printChestOne() throws IOException { //TODO PRINT EMPTY CHEST ART
         setCurrentRoom(31);
-        if(chestOneOpened){
+        if (chestOneOpened) {
 
             return Messages.CHEST_ALREADY_OPENED;
         }
@@ -206,7 +242,7 @@ public class Game {
 
     public String printChestTwo() throws IOException {
         setCurrentRoom(32);
-        if(chestTwoOpened){
+        if (chestTwoOpened) {
             return Messages.CHEST_ALREADY_OPENED;
         }
         chestTwoOpened = true;
@@ -223,8 +259,56 @@ public class Game {
         return Files.readString(screen) + "\n" + Files.readString(story);
     }
 
+    public String printGoodEnding(String lootMessage) throws IOException {
+        inCombat = false; //TODO DON'T FORGET THE GOOD ENDING
+        Path screen = Path.of(gameScreensDirectory + "victory.txt");
+        return Files.readString(screen) + "\n The party obtained " + lootMessage +
+                "\nGo back to continue your adventure.";
+    }
+
     public String printBadEnding() {
-        return null;
+        return null; //TODO DON'T FORGET THE BAD ENDING
+    }
+
+    public String printVictory(String lootMessage) throws IOException {
+        inCombat = false;
+        Path screen = Path.of(gameScreensDirectory + "victory.txt");
+        return Files.readString(screen) + "\n The party obtained " + lootMessage +
+                "\nGo back to continue your adventure.";
+    }
+
+    //THESE ARE GETTER AND SETTERS
+
+    public String printDefeat(String lootMessage) throws IOException {
+        inCombat = false; //TODO DON'T FORGET THE GAME OVER (DARKSOULS)
+        Path screen = Path.of(gameScreensDirectory + "victory.txt");
+        return Files.readString(screen) + "\n The party obtained " + lootMessage +
+                "\nGo back to continue your adventure.";
+    }
+
+    public String monsterAttack(Monster monster) throws InterruptedException {
+        int targetIndex = RandomNumber.randomizer(0, GameServer.getPlayerLimit());
+        PlayerCharacter target = party.get(targetIndex);
+        int damage = RandomNumber.randomizer(monster.getMinDamage(), monster.getMaxDamage());
+        if (target.isDefending()) {
+            damage = (int) (damage / 2);
+            target.setDefending(false);
+        }
+        target.setHitpoints(target.getHitpoints() - damage);
+        System.out.println(target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!");
+        return target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!";
+    }
+
+    public Monster getAllMonsters() {
+        if (currentRoom == 21) {
+            return allMonsters[0];
+        } else if (currentRoom == 22) {
+            return allMonsters[1];
+        } else if (currentRoom == 23) {
+            return allMonsters[2];
+        } else {
+            return allMonsters[3];
+        }
     }
 
     public boolean isInCombat() {
@@ -253,70 +337,6 @@ public class Game {
 
     public void setGold(int gold) {
         this.gold = gold;
-    }
-
-    public String buyKey() {
-        if(shopHasKey){
-            if (gold < 75) {
-                System.out.println(Messages.NOT_ENOUGH_GOLD);
-                return Messages.NOT_ENOUGH_GOLD;
-            } else {
-                gold -= 75;
-                shopHasKey = false;
-                keyCounter++;
-                return Messages.KEY_BOUGHT;
-            }
-
-        }else{
-            return Messages.KEY_ALREADY_BOUGHT;
-        }
-    }
-
-    public String buyPotion(){
-        if(gold < 25){
-            return Messages.NOT_ENOUGH_GOLD;
-        }else {
-            gold -= 25;
-            healingPotions++;
-            return Messages.POTION_BOUGHT;
-        }
-    }
-
-    public void createCharacter(String name, CharacterClasses classChoice) {
-        PlayerCharacter pc = new PlayerCharacter(classChoice, name);
-        party.add(pc);
-    }
-
-    public Monster getAllMonsters() {
-        if (currentRoom == 21) {
-            return allMonsters[0];
-        } else if (currentRoom == 22) {
-            return allMonsters[1];
-        } else if (currentRoom == 23) {
-            return allMonsters[2];
-        } else {
-            return allMonsters[3];
-        }
-    }
-
-    public String printVictory(String lootMessage) throws IOException {
-        inCombat = false;
-        Path screen = Path.of(gameScreensDirectory + "victory.txt");
-        return Files.readString(screen) + "\n The party obtained " + lootMessage +
-                "\nGo back to continue your adventure.";
-    }
-
-    public String monsterAttack(Monster monster) throws InterruptedException {
-        int targetIndex = RandomNumber.randomizer(0, GameServer.getPlayerLimit());
-        PlayerCharacter target = party.get(targetIndex);
-        int damage = RandomNumber.randomizer(monster.getMinDamage(), monster.getMaxDamage());
-        if (target.isDefending()) {
-            damage = (int) (damage / 2);
-            target.setDefending(false);
-        }
-        target.setHitpoints(target.getHitpoints() - damage);
-        System.out.println(target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!");
-        return target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!";
     }
 
     public int getHealingPotions() {

@@ -69,7 +69,7 @@ public class GameServer {
                     System.out.println(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     System.out.println(Messages.GAME_STARTED);
 
-                    printMainMenu(); //TODO new game selection
+                    printMainMenu(); //TODO new game selection SERIALIZABLE
                     broadcastMessage(game.startGame());
                     choicesSetup("resources/chapters/choices/chapterOneChoices.txt");
                     createPlayerThread(threadFactory, clientSocket, userName);
