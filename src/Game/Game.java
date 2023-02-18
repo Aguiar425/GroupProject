@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,8 +20,8 @@ public class Game {
     private static boolean inCombat;
     ExecutorService threadFactory;
     private List party;
-    private Set partySet;
     private int gold;
+    private int potions;
     private Monster[] allMonsters;
     private Boolean battleOneComplete;
     private Boolean battleTwoComplete;
@@ -263,6 +262,7 @@ public class Game {
     }
 
     public String monsterAttack(Monster monster) throws InterruptedException {
+        //TODO random target choice
         Thread.sleep(1000);
         PlayerCharacter target = (PlayerCharacter) party.get(0);
         target.setHitpoints(target.getHitpoints() - monster.getMaxDamage());

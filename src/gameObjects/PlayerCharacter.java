@@ -7,6 +7,7 @@ public class PlayerCharacter {
     private int hitpoints;
     private int damage;
     private Boolean isLeader;
+    private boolean isDefending;
 
     public PlayerCharacter(CharacterClasses characterClass, String name) {
         this.characterClass = characterClass;
@@ -14,6 +15,7 @@ public class PlayerCharacter {
         this.hitpoints = characterClass.getStartingHitpoints();
         this.damage = characterClass.getStartingDamage();
         this.isLeader = false;
+        this.isDefending = false;
     }
 
     public PlayerCharacter() {
@@ -62,5 +64,13 @@ public class PlayerCharacter {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isDefending() {
+        return isDefending;
+    }
+
+    public void setDefending(boolean defending) {
+        isDefending = defending;
     }
 }
