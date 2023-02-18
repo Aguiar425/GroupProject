@@ -153,6 +153,9 @@ public class GameServer {
                     }
                     if (!monster.getAlive()) {
                         try {
+                            this.notifyAll();
+                            System.out.println("monster died");
+                            System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
                             broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
                         } catch (IOException e) {
                             throw new RuntimeException(e);

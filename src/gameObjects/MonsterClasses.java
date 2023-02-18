@@ -2,7 +2,7 @@ package gameObjects;
 
 public enum MonsterClasses {
 
-    BUG(50, 3, 7, LootTable.BATTLE_ONE),
+    BUG(10, 3, 7, LootTable.BATTLE_ONE),
     ELF(75, 5, 10, LootTable.BATTLE_TWO),
     GRIFFIN(100, 7, 13, LootTable.BATTLE_THREE ),
     FINAL(125, 10, 15, LootTable.BATTLE_FINAL);

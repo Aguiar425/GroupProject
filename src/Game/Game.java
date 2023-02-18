@@ -24,9 +24,9 @@ public class Game {
     private Set partySet;
     private int gold;
     private Monster[] allMonsters;
-    private Boolean battleOneComplete;
-    private Boolean battleTwoComplete;
-    private Boolean battleThreeComplete;
+    private static Boolean battleOneComplete;
+    private static Boolean battleTwoComplete;
+    private static Boolean battleThreeComplete;
     //private Boolean battleFinalComplete;
     private Boolean shopHasKey;
     private Boolean shopHasPotionOne;
@@ -125,7 +125,7 @@ public class Game {
         } else {
             inCombat = true;
             setCurrentRoom(21);
-            battleOneComplete = true;
+            setBattleOneComplete(true);
 
             Path screen = Path.of(gameScreensDirectory + "bug.txt");
             Path story = Path.of(gameChaptersDirectory + "Battle1.txt");
@@ -263,8 +263,9 @@ public class Game {
 
     public String printVictory(String lootMessage) throws IOException {
         inCombat = false;
-        Path screen = Path.of(gameChaptersDirectory + "victory.txt");
-        String content = Files.readString(screen) + "\n The party obtained " + lootMessage;
+        Path screen = Path.of(gameScreensDirectory + "victory.txt");
+        String content = Files.readString(screen) + "\n The party obtained " + lootMessage +
+                "\nGo back to continue your adventure.";
         return content;
     }
 
@@ -275,5 +276,17 @@ public class Game {
         System.out.println(target.getName().concat(" received ") + Colors.RED + monster.getMaxDamage() + Colors.RESET + " of damage!");
 
         return target.getName().concat(" received ") + Colors.RED + monster.getMaxDamage() + Colors.RESET + " of damage!";
+    }
+
+    public static void setBattleOneComplete(Boolean battleOneComplete) {
+        Game.battleOneComplete = battleOneComplete;
+    }
+
+    public static void setBattleTwoComplete(Boolean battleTwoComplete) {
+        Game.battleTwoComplete = battleTwoComplete;
+    }
+
+    public static void setBattleThreeComplete(Boolean battleThreeComplete) {
+        Game.battleThreeComplete = battleThreeComplete;
     }
 }
