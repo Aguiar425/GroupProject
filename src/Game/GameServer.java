@@ -109,6 +109,24 @@ public class GameServer {
         GameServer.playerTurn = playerTurn;
     }
 
+    private static void checkBattleCompletion(Monster monster) {
+        if (monster.getMonsterClass().equals(MonsterClasses.BUG)) {
+            Game.setBattleOneComplete(true);
+
+        } else if (monster.getMonsterClass().equals(MonsterClasses.ELF)) {
+            Game.setBattleTwoComplete(true);
+
+        } else if (monster.getMonsterClass().equals(MonsterClasses.GRIFFIN)) {
+            Game.setBattleThreeComplete(true);
+        }
+    }
+
+    private static void giveLoot(Monster monster) {
+        game.setGold(game.getGold() + monster.getMonsterClass().getLoot().getLootGold());
+        game.setHealingPotions(game.getHealingPotions() + monster.getMonsterClass().getLoot().getLootPotions());
+        game.setKeyCounter(game.getKeyCounter() + monster.getMonsterClass().getLoot().getLootKeys());
+    }
+
     private void classChoice(Socket clientSocket, BufferedReader consoleInput, String userName, String playerClass) throws IOException {
         while (true) {
             if (playerClass.equals("R")) {
@@ -165,34 +183,12 @@ public class GameServer {
                             checkBattleCompletion(monster);
                         }
                         if (!monster.getAlive()) {
-                            try {
-                                playerTurn = 0;
-                                this.notifyAll();
-                                System.out.println("monster died");
-                                System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
-                                giveLoot(monster);
-                                broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
-                                if(monster.getMonsterClass().equals(MonsterClasses.GRIFFIN)){
-                                    broadcastMessage(game.printChestTwo());
-                                }
-                                System.out.println("monster thread goes to sleep");
-                                waitFor();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        monster = game.getAllMonsters();
-                        try {
-                            broadcastMessage(game.monsterAttack(monster));
-                            playerTurn = 0;
-                            this.notifyAll();
-                            System.out.println("monster thread goes to sleep");
-                            waitFor();
-                        } catch (InterruptedException | IOException e) {
-                            throw new RuntimeException(e);
+                            battleEndAction(monster);
+                        } else {
+                            continueBattle();
                         }
                     } else {
-                        System.out.println("monster thread goes to sleep");
+                        System.out.println("monster thread goes to sleep" + Colors.RED + "NOT A BATTLE" + Colors.RESET);
                         waitFor();
                     }
                 }
@@ -200,22 +196,36 @@ public class GameServer {
         }));
     }
 
-    private static void checkBattleCompletion(Monster monster) {
-        if(monster.getMonsterClass().equals(MonsterClasses.BUG)){
-            Game.setBattleOneComplete(true);
-
-        } else if (monster.getMonsterClass().equals(MonsterClasses.ELF)){
-            Game.setBattleTwoComplete(true);
-
-        }else if  (monster.getMonsterClass().equals(MonsterClasses.GRIFFIN)){
-                Game.setBattleThreeComplete(true);
+    private void continueBattle() {
+        Monster monster;
+        monster = game.getAllMonsters();
+        try {
+            broadcastMessage(game.monsterAttack(monster));
+            playerTurn = 0;
+            this.notifyAll();
+            System.out.println("monster thread goes to sleep");
+            waitFor();
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private static void giveLoot(Monster monster) {
-        game.setGold(game.getGold() + monster.getMonsterClass().getLoot().getLootGold());
-        game.setHealingPotions(game.getHealingPotions() + monster.getMonsterClass().getLoot().getLootPotions());
-        game.setKeyCounter(game.getKeyCounter() + monster.getMonsterClass().getLoot().getLootKeys());
+    private void battleEndAction(Monster monster) {
+        try {
+            playerTurn = 0;
+            this.notifyAll();
+            System.out.println("monster died");
+            System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
+            giveLoot(monster);
+            broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
+            if (monster.getMonsterClass().equals(MonsterClasses.GRIFFIN)) {
+                broadcastMessage(game.printChestTwo());
+            }
+            System.out.println("monster thread goes to sleep" + Colors.RED + "DEAD" + Colors.RESET);
+            waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException, InterruptedException {
@@ -223,27 +233,13 @@ public class GameServer {
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String msgReceived;
 
-
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
                     if (game.isInCombat()) {
                         synchronized (this) {
                             occupied = true;
-                            dealWithBattle(msgReceived, user, socket);
-                            playerTurn++;
-                            if (!game.isInCombat()) {
-                                occupied = false;
-                                playerTurn = 0;
-                            } else {
-                                if (playerTurn >= playerLimit) {
-                                    System.out.println("wake the monster thread");
-                                    this.notifyAll();
-                                }
-                                Thread.sleep(1000);
-                                occupied = false;
-                                this.wait();
-                            }
+                            playerTurn(user, socket, msgReceived);
                         }
                     } else {
                         occupied = true;
@@ -253,12 +249,7 @@ public class GameServer {
                     occupied = false;
                 } else if (msgReceived.startsWith("@")) {
                     occupied = true;
-                    for (Map.Entry<String, String> set : playerChoices.entrySet()) {
-                        if (set.getKey().equals(msgReceived)) {
-                            stringToMethod(set.getValue(), game);
-
-                        }
-                    }
+                    dealWithChoice(msgReceived);
                     Thread.sleep(3000);
                     occupied = false;
                 } else {
@@ -272,6 +263,32 @@ public class GameServer {
         System.out.printf(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
         broadcastMessage(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
 
+    }
+
+    private void dealWithChoice(String msgReceived) {
+        for (Map.Entry<String, String> set : playerChoices.entrySet()) {
+            if (set.getKey().equals(msgReceived)) {
+                stringToMethod(set.getValue(), game);
+
+            }
+        }
+    }
+
+    private void playerTurn(String user, Socket socket, String msgReceived) throws IOException, InterruptedException {
+        dealWithBattle(msgReceived, user, socket);
+        playerTurn++;
+        if (!game.isInCombat()) {
+            occupied = false;
+            playerTurn = 0;
+        } else {
+            if (playerTurn >= playerLimit) {
+                System.out.println("wake the monster thread");
+                this.notifyAll();
+            }
+            Thread.sleep(1000);
+            occupied = false;
+            this.wait();
+        }
     }
 
     public void broadcastMessage(String message) throws IOException {
@@ -314,8 +331,8 @@ public class GameServer {
         BattleCommands command = BattleCommands.getCommand(description);
         BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        while(command == null){
-            broadcastMessage("NO SUCH COMMAND EXISTS");
+        while (command == null) { //TODO fix this
+            broadcastMessage("DUE TO YOUR BAD TYPING SKILLS, YOU HAVE LOST YOUR TURN");
             input.readLine();
             description = input.toString().split(" ")[0];
             command = BattleCommands.getCommand(description);
