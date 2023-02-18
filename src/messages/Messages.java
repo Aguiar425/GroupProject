@@ -24,4 +24,5 @@ public abstract class Messages {
     public static final String NO_SPAM = Colors.RED + "Too many inputs, wait a few seconds!" + Colors.RESET;
     public static final String NOT_ENOUGH_GOLD = "Not enough gold to buy this item";
     public static final String YOU_ALREADY_ATTACKED = Colors.RED + "You already attacked this turn!" + Colors.RESET;
+    public static final String RUN_LAST_BATTLE = Colors.RED + "AH AH AH. YOU CAN'T ESCAPE FROM ME COWARDS!" + Colors.RESET;
 }

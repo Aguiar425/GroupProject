@@ -23,13 +23,17 @@ public class Game {
     private int gold;
     private int potions;
     private Monster[] allMonsters;
-    private Boolean battleOneComplete;
-    private Boolean battleTwoComplete;
-    private Boolean battleThreeComplete;
-    private Boolean battleFinalComplete;
+    private static Boolean battleOneComplete;
+    private static Boolean battleTwoComplete;
+    private static Boolean battleThreeComplete;
+    //private Boolean battleFinalComplete;
     private Boolean shopHasKey;
     private Boolean shopHasPotionOne;
     private Boolean shopHasPotionTwo;
+
+    private final String gameScreensDirectory = "resources/ascii/game_Screens/";
+    private final String gameChaptersDirectory = "resources/chapters/";
+    private final String gameChoicesDirectory = "resources/chapters/choices/";
 
     public Game() {
         this.threadFactory = Executors.newCachedThreadPool();
@@ -40,7 +44,7 @@ public class Game {
         this.battleOneComplete = false;
         this.battleTwoComplete = false;
         this.battleThreeComplete = false;
-        this.battleFinalComplete = false;
+        //this.battleFinalComplete = false;
         this.shopHasKey = true;
         this.shopHasPotionOne = true;
         this.shopHasPotionTwo = true;
@@ -57,11 +61,10 @@ public class Game {
         allMonsters[1] = new Monster(MonsterClasses.ELF);
         allMonsters[2] = new Monster(MonsterClasses.GRIFFIN);
         allMonsters[3] = new Monster(MonsterClasses.FINAL);
-
     }
 
     public String printChapterZero() throws IOException {
-        Path filePath = Path.of("resources/chapters/Chapter0.txt");
+        Path filePath = Path.of(gameChaptersDirectory + "Chapter0.txt");
         String content = Files.readString(filePath);
         return content;
     }
@@ -70,9 +73,9 @@ public class Game {
         setCurrentRoom(1);
         System.out.println("Party is in room: " + getCurrentRoom());
 
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterOneChoices.txt"));
-        Path screen = Path.of("resources/ascii/game_Screens/hallway_LeftRight.txt");
-        Path story = Path.of("resources/chapters/Chapter1.txt");
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterOneChoices.txt"));
+        Path screen = Path.of(gameScreensDirectory + "hallway_LeftRight.txt");
+        Path story = Path.of(gameChaptersDirectory + "Chapter1.txt");
         String content = Files.readString(screen) + "\n" + Files.readString(story);
         return content;
     }
@@ -81,9 +84,9 @@ public class Game {
         setCurrentRoom(2);
         System.out.println("Party is in room: " + getCurrentRoom());
 
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterTwoChoices.txt"));
-        Path screen = Path.of("resources/ascii/game_Screens/LeftRight.txt");
-        Path story = Path.of("resources/chapters/Chapter2.txt");
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterTwoChoices.txt"));
+        Path screen = Path.of(gameScreensDirectory + "LeftRight.txt");
+        Path story = Path.of(gameChaptersDirectory + "Chapter2.txt");
         String content = Files.readString(screen) + "\n" + Files.readString(story);
         return content;
     }
@@ -92,9 +95,9 @@ public class Game {
         setCurrentRoom(3);
         System.out.println("Party is in room: " + getCurrentRoom());
 
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterThreeChoices.txt"));
-        Path screen = Path.of("resources/ascii/game_Screens/LeftRight.txt");
-        Path story = Path.of("resources/chapters/Chapter3.txt");
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterThreeChoices.txt"));
+        Path screen = Path.of(gameScreensDirectory + "LeftRight.txt");
+        Path story = Path.of(gameChaptersDirectory + "Chapter3.txt");
         String content = Files.readString(screen) + "\n" + Files.readString(story);
         return content;
     }
@@ -103,9 +106,9 @@ public class Game {
         setCurrentRoom(4);
         System.out.println("Party is in room: " + getCurrentRoom());
 
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterFourChoices.txt"));
-        Path screen = Path.of("resources/ascii/game_Screens/threeDoors.txt");
-        Path story = Path.of("resources/chapters/Chapter4.txt");
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterFourChoices.txt"));
+        Path screen = Path.of(gameScreensDirectory + "threeDoors.txt");
+        Path story = Path.of(gameChaptersDirectory + "Chapter4.txt");
         String content = Files.readString(screen) + "\n" + Files.readString(story);
         return content;
     }
@@ -113,17 +116,18 @@ public class Game {
     public String printBattleOne() throws IOException {
         if (battleOneComplete) {
             setCurrentRoom(21);
-            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterOneChoices.txt"));
-            Path screen = Path.of("resources/ascii/skull.txt");
-            Path story = Path.of("resources/chapters/Battle1_Complete.txt");
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterOneChoices.txt"));
+            Path screen = Path.of(gameScreensDirectory + "skull.txt");
+            Path story = Path.of(gameChaptersDirectory + "Battle1_Complete.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
         } else {
             inCombat = true;
             setCurrentRoom(21);
+            setBattleOneComplete(true);
 
-            Path screen = Path.of("resources/ascii/game_Screens/bug.txt");
-            Path story = Path.of("resources/chapters/Battle1.txt");
+            Path screen = Path.of(gameScreensDirectory + "bug.txt");
+            Path story = Path.of(gameChaptersDirectory + "Battle1.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
 
             return content;
@@ -133,18 +137,19 @@ public class Game {
     public String printBattleTwo() throws IOException {
         if (battleTwoComplete) {
             setCurrentRoom(22);
-            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterTwoChoices.txt"));
-            Path screen = Path.of("resources/ascii/skull.txt");
-            Path story = Path.of("resources/chapters/Battle2_Complete.txt");
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterTwoChoices.txt"));
+            Path screen = Path.of(gameScreensDirectory + "skull.txt");
+            Path story = Path.of(gameChaptersDirectory + "Battle2_Complete.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
         } else {
             inCombat = true;
             setCurrentRoom(22);
+            battleTwoComplete = true;
 
-            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
-            Path screen = Path.of("resources/ascii/game_Screens/elf.txt");
-            Path story = Path.of("resources/chapters/Battle2.txt");
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "battleChoices.txt"));
+            Path screen = Path.of(gameScreensDirectory + "elf.txt");
+            Path story = Path.of(gameChaptersDirectory + "Battle2.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
         }
@@ -153,18 +158,19 @@ public class Game {
     public String printBattleThree() throws IOException {
         if (battleThreeComplete) {
             setCurrentRoom(23);
-            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/chapterThreeChoices.txt"));
-            Path screen = Path.of("resources/ascii/skull.txt");
-            Path story = Path.of("resources/chapters/Battle3_Complete.txt");
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterThreeChoices.txt"));
+            Path screen = Path.of(gameScreensDirectory + "skull.txt");
+            Path story = Path.of(gameChaptersDirectory + "Battle3_Complete.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
         } else {
             inCombat = true;
             setCurrentRoom(23);
+            battleThreeComplete = true;
 
-            GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
-            Path screen = Path.of("resources/ascii/game_Screens/griffin.txt");
-            Path story = Path.of("resources/chapters/Battle3.txt");
+            GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "battleChoices.txt"));
+            Path screen = Path.of(gameScreensDirectory + "griffin.txt");
+            Path story = Path.of(gameChaptersDirectory + "Battle3.txt");
             String content = Files.readString(screen) + "\n" + Files.readString(story);
             return content;
         }
@@ -174,9 +180,9 @@ public class Game {
         inCombat = true;
         setCurrentRoom(24);
 
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/battleChoices.txt"));
-        Path screen = Path.of("resources/ascii/game_Screens/dragon.txt");
-        Path story = Path.of("resources/chapters/BattleFinal.txt");
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "battleChoices.txt"));
+        Path screen = Path.of(gameScreensDirectory + "dragon.txt");
+        Path story = Path.of(gameChaptersDirectory + "BattleFinal.txt");
         String content = Files.readString(screen) + "\n" + Files.readString(story);
         return content;
     }
@@ -185,9 +191,9 @@ public class Game {
         setCurrentRoom(10);
         System.out.println("Party is on room(shop): " + getCurrentRoom());
 
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices("resources/chapters/choices/shopChoices.txt"));
-        Path screen = Path.of("resources/ascii/shop.txt");
-        Path story = Path.of("resources/chapters/Shop.txt");
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "shopChoices.txt"));
+        Path screen = Path.of(gameScreensDirectory + "shop.txt");
+        Path story = Path.of(gameChaptersDirectory + "Shop.txt");
         String content = Files.readString(screen) + "\n" + Files.readString(story);
         return content;
     }
@@ -254,11 +260,12 @@ public class Game {
         }
     }
 
-    public String printVictory() {
+    public String printVictory(String lootMessage) throws IOException {
         inCombat = false;
-
-
-        return null;
+        Path screen = Path.of(gameScreensDirectory + "victory.txt");
+        String content = Files.readString(screen) + "\n The party obtained " + lootMessage +
+                "\nGo back to continue your adventure.";
+        return content;
     }
 
     public String monsterAttack(Monster monster) throws InterruptedException {
@@ -269,5 +276,17 @@ public class Game {
         System.out.println(target.getName().concat(" received ") + Colors.RED + monster.getMaxDamage() + Colors.RESET + " of damage!");
 
         return target.getName().concat(" received ") + Colors.RED + monster.getMaxDamage() + Colors.RESET + " of damage!";
+    }
+
+    public static void setBattleOneComplete(Boolean battleOneComplete) {
+        Game.battleOneComplete = battleOneComplete;
+    }
+
+    public static void setBattleTwoComplete(Boolean battleTwoComplete) {
+        Game.battleTwoComplete = battleTwoComplete;
+    }
+
+    public static void setBattleThreeComplete(Boolean battleThreeComplete) {
+        Game.battleThreeComplete = battleThreeComplete;
     }
 }

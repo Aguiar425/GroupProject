@@ -3,6 +3,7 @@ package messages.commands;
 import Game.Game;
 import Game.GameServer;
 import messages.Colors;
+import messages.Messages;
 
 import java.io.IOException;
 
@@ -22,8 +23,23 @@ public class BackCommand implements CommandHandler {
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterTwo());
                 game.setCurrentRoom(2);
+            } else if (game.getCurrentRoom() == 21) {
+                System.out.println("Party left room: " + game.getCurrentRoom());
+                server.broadcastMessage(game.printChapterOne());
+                game.setCurrentRoom(1);
+            }else if (game.getCurrentRoom() == 22) {
+                System.out.println("Party left room: " + game.getCurrentRoom());
+                server.broadcastMessage(game.printChapterTwo());
+                game.setCurrentRoom(2);
+            }else if (game.getCurrentRoom() == 23) {
+                System.out.println("Party left room: " + game.getCurrentRoom());
+                server.broadcastMessage(game.printChapterFour());
+                game.setCurrentRoom(4);
+            } else if (game.getCurrentRoom() == 24) {
+                server.broadcastMessage(Messages.RUN_LAST_BATTLE);
+
             } else {
-                System.out.println("Party tried to leave room: " + game.getCurrentRoom() + "KEK");
+                System.out.println("Party tried to leave room: " + game.getCurrentRoom() + " KEK");
                 server.broadcastMessage(Colors.RED + "You can't go back, there is no escape".toUpperCase() + Colors.RESET);
             }
         } catch (IOException e) {
