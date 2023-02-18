@@ -14,7 +14,7 @@ public class Player {
 
     public Player() {
         Socket socket = null;
-        this.character = new PlayerCharacter();
+        // this.character = new PlayerCharacter();
         try {
             socket = new Socket("localhost", 8080);
             BufferedReader consoleInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));

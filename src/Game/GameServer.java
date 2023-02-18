@@ -101,6 +101,10 @@ public class GameServer {
         GameServer.playerChoices = playerChoices;
     }
 
+    public static int getPlayerLimit() {
+        return playerLimit;
+    }
+
     private void classChoice(Socket clientSocket, BufferedReader consoleInput, String userName, String playerClass) throws IOException {
         while (true) {
             if (playerClass.equals("R")) {
@@ -148,7 +152,7 @@ public class GameServer {
                 waitFor();
                 while (true) {
                     Monster monster = game.getAllMonsters();
-                    if (monster.getHitpoints() <= 0){
+                    if (monster.getHitpoints() <= 0) {
                         monster.setAlive(false);
                     }
                     if (!monster.getAlive()) {
@@ -291,5 +295,4 @@ public class GameServer {
     public HashMap<String, Socket> getClientMap() {
         return clientMap;
     }
-
 }

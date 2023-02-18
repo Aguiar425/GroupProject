@@ -1,9 +1,6 @@
 package Game;
 
-import gameObjects.CharacterClasses;
-import gameObjects.Monster;
-import gameObjects.MonsterClasses;
-import gameObjects.PlayerCharacter;
+import gameObjects.*;
 import messages.Colors;
 import messages.Messages;
 
@@ -18,22 +15,21 @@ import java.util.concurrent.Executors;
 public class Game {
     private static int currentRoom;
     private static boolean inCombat;
-    ExecutorService threadFactory;
-    private List party;
-    private int gold;
-    private int potions;
-    private Monster[] allMonsters;
     private static Boolean battleOneComplete;
     private static Boolean battleTwoComplete;
     private static Boolean battleThreeComplete;
+    private final String gameScreensDirectory = "resources/ascii/game_Screens/";
+    private final String gameChaptersDirectory = "resources/chapters/";
+    private final String gameChoicesDirectory = "resources/chapters/choices/";
+    ExecutorService threadFactory;
+    private List party;
+    private int gold;
+    private int healingPotions;
+    private Monster[] allMonsters;
     //private Boolean battleFinalComplete;
     private Boolean shopHasKey;
     private Boolean shopHasPotionOne;
     private Boolean shopHasPotionTwo;
-
-    private final String gameScreensDirectory = "resources/ascii/game_Screens/";
-    private final String gameChaptersDirectory = "resources/chapters/";
-    private final String gameChoicesDirectory = "resources/chapters/choices/";
 
     public Game() {
         this.threadFactory = Executors.newCachedThreadPool();
@@ -49,6 +45,18 @@ public class Game {
         this.shopHasPotionOne = true;
         this.shopHasPotionTwo = true;
 
+    }
+
+    public static void setBattleOneComplete(Boolean battleOneComplete) {
+        Game.battleOneComplete = battleOneComplete;
+    }
+
+    public static void setBattleTwoComplete(Boolean battleTwoComplete) {
+        Game.battleTwoComplete = battleTwoComplete;
+    }
+
+    public static void setBattleThreeComplete(Boolean battleThreeComplete) {
+        Game.battleThreeComplete = battleThreeComplete;
     }
 
     public String startGame() throws IOException {
@@ -271,22 +279,24 @@ public class Game {
     public String monsterAttack(Monster monster) throws InterruptedException {
         //TODO random target choice
         Thread.sleep(1000);
-        PlayerCharacter target = (PlayerCharacter) party.get(0);
-        target.setHitpoints(target.getHitpoints() - monster.getMaxDamage());
-        System.out.println(target.getName().concat(" received ") + Colors.RED + monster.getMaxDamage() + Colors.RESET + " of damage!");
-
-        return target.getName().concat(" received ") + Colors.RED + monster.getMaxDamage() + Colors.RESET + " of damage!";
+        int targetIndex = RandomNumber.randomizer(0, GameServer.getPlayerLimit());
+        PlayerCharacter target = (PlayerCharacter) party.get(targetIndex);
+        int damage = RandomNumber.randomizer(monster.getMinDamage(), monster.getMaxDamage());
+        if (target.isDefending()) {
+            damage = (int) (damage / 2);
+            target.setDefending(false);
+        }
+        target.setHitpoints(target.getHitpoints() - damage);
+        System.out.println(target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!");
+        return target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!";
     }
 
-    public static void setBattleOneComplete(Boolean battleOneComplete) {
-        Game.battleOneComplete = battleOneComplete;
+    public int getHealingPotions() {
+        return healingPotions;
     }
 
-    public static void setBattleTwoComplete(Boolean battleTwoComplete) {
-        Game.battleTwoComplete = battleTwoComplete;
-    }
-
-    public static void setBattleThreeComplete(Boolean battleThreeComplete) {
-        Game.battleThreeComplete = battleThreeComplete;
+    public void setHealingPotions(int healingPotions) {
+        this.healingPotions = healingPotions;
     }
 }
+

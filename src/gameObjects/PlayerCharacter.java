@@ -5,6 +5,7 @@ public class PlayerCharacter {
     private CharacterClasses characterClass;
     private String name;
     private int hitpoints;
+    private int maxHitpoints;
     private int damage;
     private Boolean isLeader;
     private boolean isDefending;
@@ -13,6 +14,7 @@ public class PlayerCharacter {
         this.characterClass = characterClass;
         this.name = name;
         this.hitpoints = characterClass.getStartingHitpoints();
+        this.maxHitpoints = hitpoints;
         this.damage = characterClass.getStartingDamage();
         this.isLeader = false;
         this.isDefending = false;
@@ -64,6 +66,14 @@ public class PlayerCharacter {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getMaxHitpoints() {
+        return maxHitpoints;
+    }
+
+    public void setMaxHitpoints(int maxHitpoints) {
+        this.maxHitpoints = maxHitpoints;
     }
 
     public boolean isDefending() {

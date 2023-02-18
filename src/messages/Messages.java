@@ -25,4 +25,8 @@ public abstract class Messages {
     public static final String NOT_ENOUGH_GOLD = "Not enough gold to buy this item";
     public static final String YOU_ALREADY_ATTACKED = Colors.RED + "You already attacked this turn!" + Colors.RESET;
     public static final String RUN_LAST_BATTLE = Colors.RED + "AH AH AH. YOU CAN'T ESCAPE FROM ME COWARDS!" + Colors.RESET;
+    public static final String NO_POTIONS = "You have no more potions, maybe you should have bought some more at the potion seller!!";
+    public static final String MAX_HP_HEAL = "Why would you try to heal at max hp??";
+    public static final String RUN_SUCCESS = Colors.BLUE + "You have successfully escaped the battle. \nPlease use the /back to return" + Colors.RESET;
+    public static final String RUN_FAIL = Colors.RED + "You have failed to escape the battle" + Colors.RESET;
 }
