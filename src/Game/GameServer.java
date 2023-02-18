@@ -317,8 +317,9 @@ public class GameServer {
         BattleCommands command = BattleCommands.getCommand(description);
 
 
-        while (command == null) { //TODO fix this
-            broadcastMessage("DUE TO YOUR BAD TYPING SKILLS, YOU HAVE LOST YOUR TURN");
+        while (command == null) {
+            writeAndSend(socket, "DUE TO YOUR BAD TYPING SKILLS, YOU HAVE LOST YOUR TURN");
+            writeAndSend(socket, "Just kidding! try again.");
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             description = input.readLine();
             description = description.split(" ")[0];
