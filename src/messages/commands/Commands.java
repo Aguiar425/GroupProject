@@ -6,7 +6,9 @@ public enum Commands {
     SAVE("/save", new SaveCommand()),
     EXIT("/exit", new ExitCommand()),
     BACK("/back", new BackCommand()),  //This command returns the party to the previous screen
-    LIST("/list", new ListCommand());//Lists all players
+    LIST("/list", new ListCommand()),  //Lists all players
+    INVENTORY ("/inv", new InventoryCommand()),
+    STATS("/stats", new StatsCommand());
 
     private String description;
     private CommandHandler command;

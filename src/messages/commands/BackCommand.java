@@ -6,10 +6,11 @@ import messages.Colors;
 import messages.Messages;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public class BackCommand implements CommandHandler {
     @Override
-    public void execute(GameServer server, Game game) {
+    public void execute(GameServer server, Game game, Socket socket, String name) {
         try {
             if (game.getCurrentRoom() == 2 || game.getCurrentRoom() == 3) {
                 System.out.println("Party left room: " + game.getCurrentRoom());
@@ -37,7 +38,10 @@ public class BackCommand implements CommandHandler {
                 game.setCurrentRoom(4);
             } else if (game.getCurrentRoom() == 24) {
                 server.broadcastMessage(Messages.RUN_LAST_BATTLE);
-
+            } else if (game.getCurrentRoom() == 31) {
+                server.broadcastMessage(game.printChapterThree());
+            } else if (game.getCurrentRoom() == 32) {
+                server.broadcastMessage(game.printBattleThree());
             } else {
                 System.out.println("Party tried to leave room: " + game.getCurrentRoom() + " KEK");
                 server.broadcastMessage(Colors.RED + "You can't go back, there is no escape".toUpperCase() + Colors.RESET);

@@ -29,4 +29,8 @@ public abstract class Messages {
     public static final String MAX_HP_HEAL = "Why would you try to heal at max hp??";
     public static final String RUN_SUCCESS = Colors.BLUE + "You have successfully escaped the battle. \nPlease use the /back to return" + Colors.RESET;
     public static final String RUN_FAIL = Colors.RED + "You have failed to escape the battle" + Colors.RESET;
+    public static final String KEY_BOUGHT = "You have bought a door key.";
+    public static final String KEY_ALREADY_BOUGHT = "The key is already in your possession";
+    public static final String POTION_BOUGHT = "You have bought a healing potion";
+    public static final String CHEST_ALREADY_OPENED = "This chest is empty.\nGo back to continue your adventure";
 }

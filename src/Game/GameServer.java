@@ -2,6 +2,7 @@ package Game;
 
 import gameObjects.CharacterClasses;
 import gameObjects.Monster;
+import gameObjects.MonsterClasses;
 import gameObjects.PlayerCharacter;
 import messages.Colors;
 import messages.Messages;
@@ -27,7 +28,6 @@ public class GameServer {
     private static int playerTurn = 0;
     private static Game game;
     private static boolean occupied = false;
-    boolean alreadyAttacked = false;
 
     public GameServer() {
         game = new Game();
@@ -51,7 +51,7 @@ public class GameServer {
 
                 writeAndSend(clientSocket, Colors.YELLOW + Messages.ASK_FOR_CLASS + Colors.RESET);
                 writeAndSend(clientSocket, Messages.AVAILABLE_CLASSES);
-                String playerClass = consoleInput.readLine().toString();
+                String playerClass = consoleInput.readLine();
                 classChoice(clientSocket, consoleInput, userName, playerClass);
 
                 totalPlayers++;
@@ -122,7 +122,7 @@ public class GameServer {
                 break;
             } else {
                 writeAndSend(clientSocket, Colors.YELLOW + Messages.INVALID_INPUT + Colors.RESET);
-                playerClass = consoleInput.readLine().toString();
+                playerClass = consoleInput.readLine();
             }
         }
     }
@@ -162,7 +162,7 @@ public class GameServer {
                         Monster monster = game.getAllMonsters();
                         if (monster.getHitpoints() <= 0) {
                             monster.setAlive(false);
-                            game.setBattleOneComplete(true);
+                            checkBattleCompletion(monster);
                         }
                         if (!monster.getAlive()) {
                             try {
@@ -170,12 +170,16 @@ public class GameServer {
                                 this.notifyAll();
                                 System.out.println("monster died");
                                 System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
+                                giveLoot(monster);
                                 broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
+                                if(monster.getMonsterClass().equals(MonsterClasses.GRIFFIN)){
+                                    broadcastMessage(game.printChestTwo());
+                                }
+                                System.out.println("monster thread goes to sleep");
+                                waitFor();
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
-                            System.out.println("monster thread goes to sleep");
-                            waitFor();
                         }
                         monster = game.getAllMonsters();
                         try {
@@ -196,6 +200,24 @@ public class GameServer {
         }));
     }
 
+    private static void checkBattleCompletion(Monster monster) {
+        if(monster.getMonsterClass().equals(MonsterClasses.BUG)){
+            Game.setBattleOneComplete(true);
+
+        } else if (monster.getMonsterClass().equals(MonsterClasses.ELF)){
+            Game.setBattleTwoComplete(true);
+
+        }else if  (monster.getMonsterClass().equals(MonsterClasses.GRIFFIN)){
+                Game.setBattleThreeComplete(true);
+        }
+    }
+
+    private static void giveLoot(Monster monster) {
+        game.setGold(game.getGold() + monster.getMonsterClass().getLoot().getLootGold());
+        game.setHealingPotions(game.getHealingPotions() + monster.getMonsterClass().getLoot().getLootPotions());
+        game.setKeyCounter(game.getKeyCounter() + monster.getMonsterClass().getLoot().getLootKeys());
+    }
+
     private void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException, InterruptedException {
         System.out.println(Colors.RED + clientMap + Colors.RESET);
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -208,7 +230,7 @@ public class GameServer {
                     if (game.isInCombat()) {
                         synchronized (this) {
                             occupied = true;
-                            dealWithBattle(msgReceived, user);
+                            dealWithBattle(msgReceived, user, socket);
                             playerTurn++;
                             if (!game.isInCombat()) {
                                 occupied = false;
@@ -225,7 +247,7 @@ public class GameServer {
                         }
                     } else {
                         occupied = true;
-                        dealWithCommand(msgReceived);
+                        dealWithCommand(msgReceived, socket, user);
                     }
                     Thread.sleep(3000);
                     occupied = false;
@@ -258,7 +280,7 @@ public class GameServer {
         }
     }
 
-    private void writeAndSend(Socket clientSocket, String message) throws IOException {
+    public void writeAndSend(Socket clientSocket, String message) throws IOException {
         BufferedWriter outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         outputName.write(message);
         outputName.newLine();
@@ -276,7 +298,7 @@ public class GameServer {
         }
     }
 
-    private void dealWithCommand(String message) throws IOException {
+    private void dealWithCommand(String message, Socket socket, String name) throws IOException {
         String description = message.split(" ")[0];
         Commands command = Commands.getCommand(description);
 
@@ -284,23 +306,24 @@ public class GameServer {
             broadcastMessage("NO SUCH COMMAND EXISTS");
             return;
         }
-        command.getHandler().execute(GameServer.this, this.game);
+        command.getHandler().execute(GameServer.this, game, socket, name);
     }
 
-    private void dealWithBattle(String message, String name) throws IOException {
+    private void dealWithBattle(String message, String name, Socket socket) throws IOException {
         String description = message.split(" ")[0];
         BattleCommands command = BattleCommands.getCommand(description);
+        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        if (command == null) {
-            //TODO change to allow multiple tries
+        while(command == null){
             broadcastMessage("NO SUCH COMMAND EXISTS");
-            return;
+            input.readLine();
+            description = input.toString().split(" ")[0];
+            command = BattleCommands.getCommand(description);
         }
 
         for (PlayerCharacter pc : game.getParty()) {
             if (pc.getName().equals(name)) {
-
-                command.getBattleHandler().execute(GameServer.this, this.game, pc);
+                command.getBattleHandler().execute(GameServer.this, game, pc);
                 return;
             }
         }
@@ -312,13 +335,5 @@ public class GameServer {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void startCombat() {
-
-    }
-
-    public HashMap<String, Socket> getClientMap() {
-        return clientMap;
     }
 }

@@ -1,23 +1,29 @@
 package gameObjects;
 
 public enum CharacterClasses {
-    ROGUE(50, 3),
-    WARRIOR(100, 5),
-    MAGE(30, 10);
+    ROGUE(50, 3, 6),
+    WARRIOR(100, 5, 10),
+    MAGE(30, 10, 15);
 
     private final int startingHitpoints;
-    private final int startingDamage;
+    private final int minDamage;
+    private final int maxDamage;
 
-    CharacterClasses(int startingHitpoints, int startingDamage) {
+    CharacterClasses(int startingHitpoints, int minDamage, int maxDamage) {
         this.startingHitpoints =  startingHitpoints;
-        this.startingDamage = startingDamage;
+        this.minDamage = minDamage;
+        this.maxDamage = maxDamage;
     }
 
     public int getStartingHitpoints() {
         return startingHitpoints;
     }
 
-    public int getStartingDamage() {
-        return startingDamage;
+    public int getMinDamage() {
+        return minDamage;
+    }
+
+    public int getMaxDamage() {
+        return maxDamage;
     }
 }

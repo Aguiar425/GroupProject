@@ -6,8 +6,8 @@ public class PlayerCharacter {
     private String name;
     private int hitpoints;
     private int maxHitpoints;
-    private int damage;
-    private Boolean isLeader;
+    private int minDamage;
+    private int maxDamage;
     private boolean isDefending;
 
     public PlayerCharacter(CharacterClasses characterClass, String name) {
@@ -15,18 +15,11 @@ public class PlayerCharacter {
         this.name = name;
         this.hitpoints = characterClass.getStartingHitpoints();
         this.maxHitpoints = hitpoints;
-        this.damage = characterClass.getStartingDamage();
-        this.isLeader = false;
+        this.minDamage = characterClass.getMinDamage();
+        this.maxDamage = characterClass.getMaxDamage();
         this.isDefending = false;
     }
 
-    public PlayerCharacter() {
-        this.characterClass = null;
-        this.name = null;
-        this.hitpoints = 0;
-        this.damage = 0;
-        this.isLeader = false;
-    }
 
     public int getHitpoints() {
         return hitpoints;
@@ -36,20 +29,12 @@ public class PlayerCharacter {
         this.hitpoints = hitpoints;
     }
 
-    public int getDamage() {
-        return damage;
+    public int getMinDamage() {
+        return minDamage;
     }
 
-    public void setDamage(int damage) {
-        this.damage = damage;
-    }
-
-    public Boolean getLeader() {
-        return isLeader;
-    }
-
-    public void setLeader(Boolean leader) {
-        isLeader = leader;
+    public void setMinDamage(int minDamage) {
+        this.minDamage = minDamage;
     }
 
     public CharacterClasses getCharacterClass() {
@@ -82,5 +67,13 @@ public class PlayerCharacter {
 
     public void setDefending(boolean defending) {
         isDefending = defending;
+    }
+
+    public int getMaxDamage() {
+        return maxDamage;
+    }
+
+    public void setMaxDamage(int maxDamage) {
+        this.maxDamage = maxDamage;
     }
 }

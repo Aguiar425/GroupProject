@@ -1,2 +1,2 @@
-@K,something
-@P,something
+@K,buyKey
+@P,buyPotion
