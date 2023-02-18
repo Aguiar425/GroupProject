@@ -19,6 +19,7 @@ public class StatsCommand implements CommandHandler{
                 .get(0);
 
             server.writeAndSend(socket, "Name: " + pc.getName());
+            server.writeAndSend(socket, "Class: " + pc.getCharacterClass().getDescription());
             server.writeAndSend(socket, "HP: " + pc.getHitpoints());
             server.writeAndSend(socket, "Damage: " + pc.getMinDamage() + " - " + pc.getMaxDamage());
             server.writeAndSend(socket, "Strength: " + RandomNumber.randomizer(3, 69));
