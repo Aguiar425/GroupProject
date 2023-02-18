@@ -155,6 +155,7 @@ public class GameServer {
     public void monsterThread(ExecutorService threadFactory) {
         threadFactory.submit(new Thread(() -> {
             synchronized (this) {
+                System.out.println("monster thread goes to sleep");
                 waitFor();
                 while (true) {
                     if (game.isInCombat()) {
@@ -172,6 +173,7 @@ public class GameServer {
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
+                            System.out.println("monster thread goes to sleep");
                             waitFor();
                         }
                         monster = game.getAllMonsters();
@@ -179,11 +181,13 @@ public class GameServer {
                             broadcastMessage(game.monsterAttack(monster));
                             playerTurn = 0;
                             this.notifyAll();
+                            System.out.println("monster thread goes to sleep");
                             waitFor();
                         } catch (InterruptedException | IOException e) {
                             throw new RuntimeException(e);
                         }
                     } else {
+                        System.out.println("monster thread goes to sleep");
                         waitFor();
                     }
                 }
@@ -207,8 +211,10 @@ public class GameServer {
                             playerTurn++;
                             if (!game.isInCombat()) {
                                 occupied = false;
+                                playerTurn = 0;
                             } else {
-                                if (playerTurn == playerLimit) {
+                                if (playerTurn >= playerLimit) {
+                                    System.out.println("wake the monster thread");
                                     this.notifyAll();
                                 }
                                 Thread.sleep(1000);

@@ -122,8 +122,8 @@ public class Game {
     }
 
     public String printBattleOne() throws IOException {
-        if (battleOneComplete) {
-            setCurrentRoom(21);
+        setCurrentRoom(21);
+        if (this.battleOneComplete) {
             GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterOneChoices.txt"));
             Path screen = Path.of(gameScreensDirectory + "skull.txt");
             Path story = Path.of(gameChaptersDirectory + "Battle1_Complete.txt");
@@ -131,8 +131,6 @@ public class Game {
             return content;
         } else {
             inCombat = true;
-            setCurrentRoom(21);
-            setBattleOneComplete(true);
 
             Path screen = Path.of(gameScreensDirectory + "bug.txt");
             Path story = Path.of(gameChaptersDirectory + "Battle1.txt");
@@ -277,8 +275,6 @@ public class Game {
     }
 
     public String monsterAttack(Monster monster) throws InterruptedException {
-        //TODO random target choice
-        Thread.sleep(1000);
         int targetIndex = RandomNumber.randomizer(0, GameServer.getPlayerLimit());
         PlayerCharacter target = (PlayerCharacter) party.get(targetIndex);
         int damage = RandomNumber.randomizer(monster.getMinDamage(), monster.getMaxDamage());
