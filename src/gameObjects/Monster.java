@@ -39,4 +39,8 @@ public class Monster {
     public void setAlive(Boolean alive) {
         isAlive = alive;
     }
+
+    public MonsterClasses getMonsterClass() {
+        return monsterClass;
+    }
 }

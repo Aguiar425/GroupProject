@@ -2,19 +2,21 @@ package gameObjects;
 
 public enum MonsterClasses {
 
-    BUG(50, 3, 7),
-    ELF(75, 5, 10),
-    GRIFFIN(100, 7, 13),
-    FINAL(125, 10, 15);
+    BUG(50, 3, 7, LootTable.BATTLE_ONE),
+    ELF(75, 5, 10, LootTable.BATTLE_TWO),
+    GRIFFIN(100, 7, 13, LootTable.BATTLE_THREE ),
+    FINAL(125, 10, 15, LootTable.BATTLE_FINAL);
 
     private int hitpoints;
     private int minDamage;
     private int maxDamage;
+    private LootTable loot;
 
-    MonsterClasses(int hitpoints, int minDamage, int maxDamage) {
+    MonsterClasses(int hitpoints, int minDamage, int maxDamage, LootTable loot) {
         this.hitpoints = hitpoints;
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
+        this.loot = loot;
     }
 
     public int getHitpoints() {
@@ -27,5 +29,9 @@ public enum MonsterClasses {
 
     public int getMaxDamage() {
         return maxDamage;
+    }
+
+    public LootTable getLoot() {
+        return loot;
     }
 }

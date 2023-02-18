@@ -148,6 +148,18 @@ public class GameServer {
                 waitFor();
                 while (true) {
                     Monster monster = game.getAllMonsters();
+                    if (monster.getHitpoints() <= 0){
+                        monster.setAlive(false);
+                    }
+                    if (!monster.getAlive()) {
+                        try {
+                            broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        waitFor();
+                    }
+                    monster = game.getAllMonsters();
                     try {
                         broadcastMessage(game.monsterAttack(monster));
                         playerTurn = 0;
@@ -155,11 +167,6 @@ public class GameServer {
                         waitFor();
                     } catch (InterruptedException | IOException e) {
                         throw new RuntimeException(e);
-                    }
-                    if (!monster.getAlive()) {
-                        game.printVictory();
-                        waitFor();
-
                     }
                 }
             }
