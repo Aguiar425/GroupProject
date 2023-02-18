@@ -73,7 +73,7 @@ public class Game {
         allMonsters[3] = new Monster(MonsterClasses.FINAL);
     }
 
-    public String printChapterZero() throws IOException {
+    public String printChapterZero() throws IOException { //TODO IMPLEMENT CHAPTER ZERO AND ADD DELAY BETWEEN SCREENS. MAYBE WAIT FOR ANY INPUT?
         Path filePath = Path.of(gameChaptersDirectory + "Chapter0.txt");
         return Files.readString(filePath);
     }
@@ -308,7 +308,7 @@ public class Game {
 
     public String monsterAttack(Monster monster) throws InterruptedException {
         int targetIndex = RandomNumber.randomizer(0, GameServer.getPlayerLimit());
-        PlayerCharacter target = (PlayerCharacter) party.get(targetIndex);
+        PlayerCharacter target = party.get(targetIndex);
         int damage = RandomNumber.randomizer(monster.getMinDamage(), monster.getMaxDamage());
         if (target.isDefending()) {
             damage = (int) (damage / 2);
