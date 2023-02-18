@@ -296,7 +296,6 @@ public class GameServer {
         for (Map.Entry<String, String> set : playerChoices.entrySet()) {
             if (set.getKey().equals(msgReceived)) {
                 stringToMethod(set.getValue(), game);
-
             }
         }
     }
@@ -315,7 +314,6 @@ public class GameServer {
     private void dealWithBattle(String message, String name, Socket socket) throws IOException {
         String description = message.split(" ")[0];
         BattleCommands command = BattleCommands.getCommand(description);
-
 
         while (command == null) {
             writeAndSend(socket, "DUE TO YOUR BAD TYPING SKILLS, YOU HAVE LOST YOUR TURN");

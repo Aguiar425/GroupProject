@@ -266,8 +266,23 @@ public class Game {
                 "\nGo back to continue your adventure.";
     }
 
-    public String printBadEnding() {
-        return null; //TODO DON'T FORGET THE BAD ENDING
+    public String printBadEnding() throws IOException {
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "badEndingChoicesOne.txt"));
+        setCurrentRoom(41);
+
+        Path screen = Path.of(gameScreensDirectory + "badEnding.txt");
+        Path story = Path.of(gameChaptersDirectory + "BadEndingChapterOne.txt");
+        return Files.readString(screen) + "\n" + Files.readString(story); //TODO DON'T FORGET THE BAD ENDING
+    }
+
+    public String printBadChoicesTwo() throws IOException {
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "badEndingChoicesTwo.txt"));
+        return Files.readString(Path.of(gameChaptersDirectory + "BadEndingChapterTwo.txt"));
+    }
+
+    public String printBadChoicesThree () throws IOException{
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "badEndingChoicesThree.txt"));
+        return Files.readString(Path.of(gameChaptersDirectory + "BadEndingChapterThree.txt"));
     }
 
     public String printVictory(String lootMessage) throws IOException {
@@ -279,11 +294,10 @@ public class Game {
 
     //THESE ARE GETTER AND SETTERS
 
-    public String printDefeat(String lootMessage) throws IOException {
-        inCombat = false; //TODO DON'T FORGET THE GAME OVER (DARKSOULS)
-        Path screen = Path.of(gameScreensDirectory + "victory.txt");
-        return Files.readString(screen) + "\n The party obtained " + lootMessage +
-                "\nGo back to continue your adventure.";
+    public String printDefeat() throws IOException {
+        //TODO DON'T FORGET THE GAME OVER (DARKSOULS)
+        Path screen = Path.of(gameScreensDirectory + "gameOver.txt");
+        return Files.readString(screen);
     }
 
     public String monsterAttack(Monster monster) throws InterruptedException {
