@@ -4,6 +4,7 @@ import gameObjects.CharacterClasses;
 import gameObjects.Monster;
 import gameObjects.MonsterClasses;
 import gameObjects.PlayerCharacter;
+import messages.Colors;
 import messages.Messages;
 
 import java.io.IOException;
@@ -261,9 +262,12 @@ public class Game {
         return null;
     }
 
-    public void monsterAttack(Monster monster) {
+    public String monsterAttack(Monster monster) throws InterruptedException {
+        Thread.sleep(1000);
         PlayerCharacter target = (PlayerCharacter) party.get(0);
         target.setHitpoints(target.getHitpoints() - monster.getMaxDamage());
-        System.out.println("dealt " + monster.getMaxDamage() + "to " + target.getName());
+        System.out.println(target.getName().concat(" received ") + Colors.RED + monster.getMaxDamage() + Colors.RESET + " of damage!");
+
+        return target.getName().concat(" received ") + Colors.RED + monster.getMaxDamage() + Colors.RESET + " of damage!";
     }
 }

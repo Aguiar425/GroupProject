@@ -143,30 +143,27 @@ public class GameServer {
     }
 
     public void monsterThread(ExecutorService threadFactory) {
-        Thread t = new Thread(() -> {
+        threadFactory.submit(new Thread(() -> {
             synchronized (this) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                waitFor();
                 while (true) {
                     Monster monster = game.getAllMonsters();
-                    System.out.println("prep attack");
-                    game.monsterAttack(monster);
-                    System.out.println("after attack");
-                    playerTurn = 0;
-                    this.notifyAll();
                     try {
-                        this.wait();
-                    } catch (InterruptedException e) {
+                        broadcastMessage(game.monsterAttack(monster));
+                        playerTurn = 0;
+                        this.notifyAll();
+                        waitFor();
+                    } catch (InterruptedException | IOException e) {
                         throw new RuntimeException(e);
                     }
-                }
+                    if (!monster.getAlive()) {
+                        game.printVictory();
+                        waitFor();
 
+                    }
+                }
             }
-        });
-        threadFactory.submit(t);
+        }));
     }
 
     private void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException, InterruptedException {
@@ -210,7 +207,6 @@ public class GameServer {
                 writeAndSend(socket, Messages.NO_SPAM);
             }
         }
-
         clientMap.remove(user, socket);
         System.out.printf(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
         broadcastMessage(Colors.YELLOW + Messages.USER_LEFT.formatted(user) + Colors.RESET);
@@ -267,6 +263,14 @@ public class GameServer {
                 command.getBattleHandler().execute(GameServer.this, this.game, pc);
                 return;
             }
+        }
+    }
+
+    private void waitFor() {
+        try {
+            this.wait();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
