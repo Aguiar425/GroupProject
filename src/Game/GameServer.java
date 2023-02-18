@@ -73,7 +73,7 @@ public class GameServer {
                     broadcastMessage(game.startGame());
                     choicesSetup("resources/chapters/choices/chapterOneChoices.txt");
                     createPlayerThread(threadFactory, clientSocket, userName);
-                    monsterThread(threadFactory);
+                    createMonsterThread(threadFactory);
                 } else {
                     System.out.println(Messages.PLAYER_LIMIT);
                 }
@@ -83,6 +83,7 @@ public class GameServer {
         }
     }
 
+    //THESE METHODS ARE USED IN THE INITIALIZATION OF THE GAME
     private static void setPlayerNumber() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("How many players?");
@@ -95,18 +96,6 @@ public class GameServer {
                 System.out.println("Please insert a valid number");
             }
         }
-    }
-
-    public static void setPlayerChoices(HashMap<String, String> playerChoices) {
-        GameServer.playerChoices = playerChoices;
-    }
-
-    public static int getPlayerLimit() {
-        return playerLimit;
-    }
-
-    public static void setPlayerTurn(int playerTurn) {
-        GameServer.playerTurn = playerTurn;
     }
 
     private static void checkBattleCompletion(Monster monster) {
@@ -125,6 +114,18 @@ public class GameServer {
         game.setGold(game.getGold() + monster.getMonsterClass().getLoot().getLootGold());
         game.setHealingPotions(game.getHealingPotions() + monster.getMonsterClass().getLoot().getLootPotions());
         game.setKeyCounter(game.getKeyCounter() + monster.getMonsterClass().getLoot().getLootKeys());
+    }
+
+    public static void setPlayerChoices(HashMap<String, String> playerChoices) {
+        GameServer.playerChoices = playerChoices;
+    }
+
+    public static int getPlayerLimit() {
+        return playerLimit;
+    }
+
+    public static void setPlayerTurn(int playerTurn) {
+        GameServer.playerTurn = playerTurn;
     }
 
     private void classChoice(Socket clientSocket, BufferedReader consoleInput, String userName, String playerClass) throws IOException {
@@ -149,18 +150,6 @@ public class GameServer {
         playerChoices = PlayerChoices.playerChoices(path);
     }
 
-    private void createPlayerThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
-        Thread t = new Thread(() -> {
-            try {
-                playerThread(userName, clientSocket, clientMap);
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        t.setName(userName);
-        threadFactory.submit(t);
-    }
-
     private void printMainMenu() throws IOException {
         Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
         String content = Files.readString(filePath);
@@ -170,30 +159,37 @@ public class GameServer {
         //BufferedReader input = new BufferedReader(new InputStreamReader(socket.GetInputStream()));
     }
 
-    public void monsterThread(ExecutorService threadFactory) {
+    //THESE METHODS ARE RELATED TO THE MONSTER THREAD
+    public void createMonsterThread(ExecutorService threadFactory) {
         threadFactory.submit(new Thread(() -> {
             synchronized (this) {
                 System.out.println("monster thread goes to sleep");
-                waitFor();
-                while (true) {
-                    if (game.isInCombat()) {
-                        Monster monster = game.getAllMonsters();
-                        if (monster.getHitpoints() <= 0) {
-                            monster.setAlive(false);
-                            checkBattleCompletion(monster);
-                        }
-                        if (!monster.getAlive()) {
-                            battleEndAction(monster);
-                        } else {
-                            continueBattle();
-                        }
-                    } else {
-                        System.out.println("monster thread goes to sleep" + Colors.RED + "NOT A BATTLE" + Colors.RESET);
-                        waitFor();
-                    }
-                }
+                monsterThread();
             }
         }));
+    }
+
+    // THESE METHODS ARE RELATED TO THE PLAYER THREAD
+
+    private void monsterThread() {
+        waitFor();
+        while (true) {
+            if (game.isInCombat()) {
+                Monster monster = game.getAllMonsters();
+                if (monster.getHitpoints() <= 0) {
+                    monster.setAlive(false);
+                    checkBattleCompletion(monster);
+                }
+                if (!monster.getAlive()) {
+                    battleEndAction(monster);
+                } else {
+                    continueBattle();
+                }
+            } else {
+                System.out.println("monster thread goes to sleep" + Colors.RED + "NOT A BATTLE" + Colors.RESET);
+                waitFor();
+            }
+        }
     }
 
     private void continueBattle() {
@@ -226,6 +222,18 @@ public class GameServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void createPlayerThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
+        Thread t = new Thread(() -> {
+            try {
+                playerThread(userName, clientSocket, clientMap);
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        t.setName(userName);
+        threadFactory.submit(t);
     }
 
     private void playerThread(String user, Socket socket, HashMap<String, Socket> clientMap) throws IOException, InterruptedException {
@@ -265,15 +273,6 @@ public class GameServer {
 
     }
 
-    private void dealWithChoice(String msgReceived) {
-        for (Map.Entry<String, String> set : playerChoices.entrySet()) {
-            if (set.getKey().equals(msgReceived)) {
-                stringToMethod(set.getValue(), game);
-
-            }
-        }
-    }
-
     private void playerTurn(String user, Socket socket, String msgReceived) throws IOException, InterruptedException {
         dealWithBattle(msgReceived, user, socket);
         playerTurn++;
@@ -288,6 +287,51 @@ public class GameServer {
             Thread.sleep(1000);
             occupied = false;
             this.wait();
+        }
+    }
+
+    //THESE ARE METHODS THAT ARE USED EVERYWHERE
+
+    private void dealWithChoice(String msgReceived) {
+        for (Map.Entry<String, String> set : playerChoices.entrySet()) {
+            if (set.getKey().equals(msgReceived)) {
+                stringToMethod(set.getValue(), game);
+
+            }
+        }
+    }
+
+    private void dealWithCommand(String message, Socket socket, String name) throws IOException {
+        String description = message.split(" ")[0];
+        Commands command = Commands.getCommand(description);
+
+        if (command == null) {
+            writeAndSend(socket, Messages.NO_BATTLE_COMMAND);
+            return;
+        }
+        command.getHandler().execute(GameServer.this, game, socket, name);
+    }
+
+    private void dealWithBattle(String message, String name, Socket socket) throws IOException {
+        String description = message.split(" ")[0];
+        BattleCommands command = BattleCommands.getCommand(description);
+
+
+        while (command == null) { //TODO fix this
+            broadcastMessage("DUE TO YOUR BAD TYPING SKILLS, YOU HAVE LOST YOUR TURN");
+            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            description = input.readLine();
+            description = description.split(" ")[0];
+            command = BattleCommands.getCommand(description);
+            System.out.println("input = " + input);
+            System.out.println("command = " + command);
+        }
+
+        for (PlayerCharacter pc : game.getParty()) {
+            if (pc.getName().equals(name)) {
+                command.getBattleHandler().execute(GameServer.this, game, pc);
+                return;
+            }
         }
     }
 
@@ -312,37 +356,6 @@ public class GameServer {
             broadcastMessage((String) method.invoke(game));
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void dealWithCommand(String message, Socket socket, String name) throws IOException {
-        String description = message.split(" ")[0];
-        Commands command = Commands.getCommand(description);
-
-        if (command == null) {
-            broadcastMessage("NO SUCH COMMAND EXISTS");
-            return;
-        }
-        command.getHandler().execute(GameServer.this, game, socket, name);
-    }
-
-    private void dealWithBattle(String message, String name, Socket socket) throws IOException {
-        String description = message.split(" ")[0];
-        BattleCommands command = BattleCommands.getCommand(description);
-        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-        while (command == null) { //TODO fix this
-            broadcastMessage("DUE TO YOUR BAD TYPING SKILLS, YOU HAVE LOST YOUR TURN");
-            input.readLine();
-            description = input.toString().split(" ")[0];
-            command = BattleCommands.getCommand(description);
-        }
-
-        for (PlayerCharacter pc : game.getParty()) {
-            if (pc.getName().equals(name)) {
-                command.getBattleHandler().execute(GameServer.this, game, pc);
-                return;
-            }
         }
     }
 
