@@ -105,6 +105,10 @@ public class GameServer {
         return playerLimit;
     }
 
+    public static void setPlayerTurn(int playerTurn) {
+        GameServer.playerTurn = playerTurn;
+    }
+
     private void classChoice(Socket clientSocket, BufferedReader consoleInput, String userName, String playerClass) throws IOException {
         while (true) {
             if (playerClass.equals("R")) {
@@ -128,13 +132,15 @@ public class GameServer {
     }
 
     private void createPlayerThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
-        threadFactory.submit(new Thread(() -> {
+        Thread t = new Thread(() -> {
             try {
                 playerThread(userName, clientSocket, clientMap);
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }));
+        });
+        t.setName(userName);
+        threadFactory.submit(t);
     }
 
     private void printMainMenu() throws IOException {
@@ -151,29 +157,34 @@ public class GameServer {
             synchronized (this) {
                 waitFor();
                 while (true) {
-                    Monster monster = game.getAllMonsters();
-                    if (monster.getHitpoints() <= 0) {
-                        monster.setAlive(false);
-                    }
-                    if (!monster.getAlive()) {
+                    if (game.isInCombat()) {
+                        Monster monster = game.getAllMonsters();
+                        if (monster.getHitpoints() <= 0) {
+                            monster.setAlive(false);
+                        }
+                        if (!monster.getAlive()) {
+                            try {
+                                playerTurn = 0;
+                                this.notifyAll();
+                                System.out.println("monster died");
+                                System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
+                                broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            waitFor();
+                        }
+                        monster = game.getAllMonsters();
                         try {
+                            broadcastMessage(game.monsterAttack(monster));
+                            playerTurn = 0;
                             this.notifyAll();
-                            System.out.println("monster died");
-                            System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
-                            broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
-                        } catch (IOException e) {
+                            waitFor();
+                        } catch (InterruptedException | IOException e) {
                             throw new RuntimeException(e);
                         }
+                    } else {
                         waitFor();
-                    }
-                    monster = game.getAllMonsters();
-                    try {
-                        broadcastMessage(game.monsterAttack(monster));
-                        playerTurn = 0;
-                        this.notifyAll();
-                        waitFor();
-                    } catch (InterruptedException | IOException e) {
-                        throw new RuntimeException(e);
                     }
                 }
             }
@@ -191,12 +202,19 @@ public class GameServer {
                 if (msgReceived.startsWith("/")) {
                     if (game.isInCombat()) {
                         synchronized (this) {
+                            occupied = true;
                             dealWithBattle(msgReceived, user);
                             playerTurn++;
-                            if (playerTurn == playerLimit) {
-                                this.notifyAll();
+                            if (!game.isInCombat()) {
+                                occupied = false;
+                            } else {
+                                if (playerTurn == playerLimit) {
+                                    this.notifyAll();
+                                }
+                                Thread.sleep(1000);
+                                occupied = false;
+                                this.wait();
                             }
-                            this.wait();
                         }
                     } else {
                         occupied = true;
@@ -267,6 +285,7 @@ public class GameServer {
         BattleCommands command = BattleCommands.getCommand(description);
 
         if (command == null) {
+            //TODO change to allow multiple tries
             broadcastMessage("NO SUCH COMMAND EXISTS");
             return;
         }

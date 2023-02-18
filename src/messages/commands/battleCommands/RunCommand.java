@@ -17,6 +17,8 @@ public class RunCommand implements BattleHandler {
             case 1:
                 game.setInCombat(false);
                 server.broadcastMessage(Messages.RUN_SUCCESS);
+                server.notifyAll();
+                GameServer.setPlayerTurn(0);
                 break;
             case 2:
                 server.broadcastMessage(Messages.RUN_FAIL);
