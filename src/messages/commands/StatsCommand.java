@@ -4,11 +4,9 @@ import Game.Game;
 import Game.GameServer;
 import gameObjects.PlayerCharacter;
 import gameObjects.RandomNumber;
-
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+
 
 public class StatsCommand implements CommandHandler{
     @Override
