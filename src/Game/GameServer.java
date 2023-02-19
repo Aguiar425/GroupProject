@@ -188,9 +188,11 @@ public class GameServer {
                 if (monster.getHitpoints() <= 0) {
                     monster.setAlive(false);
                     checkBattleCompletion(monster);
+
                 }
                 if (!monster.getAlive()) {
                     battleEndAction(monster);
+
                 } else {
                     continueBattle();
                 }
@@ -223,8 +225,10 @@ public class GameServer {
             this.notifyAll();
             System.out.println("monster died");
             System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
-            if(monster.getMonsterClass().equals(MonsterClasses.FINAL)){
+            if (monster.getMonsterClass().equals(MonsterClasses.FINAL)) {
                 broadcastEpilogue(gameChaptersDirectory, gameSoundsDirectory);
+                waitFor();
+                return;
             }
             giveLoot(monster);
             broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
@@ -240,7 +244,7 @@ public class GameServer {
     }
 
     private void broadcastEpilogue(String gameChaptersDirectory, String gameSoundsDirectory) throws InterruptedException, IOException {
-        game.sound.getDungeonSoundLoopVar().stop();
+        game.sound.getSoundLoopVar().stop();
         game.sound.setSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
         Thread.sleep(5000);
         broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterOne.txt")));

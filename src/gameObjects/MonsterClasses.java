@@ -5,7 +5,7 @@ public enum MonsterClasses {
     BUG(10, 3, 7, LootTable.BATTLE_ONE),
     ELF(10, 5, 10, LootTable.BATTLE_TWO),
     GRIFFIN(10, 7, 13, LootTable.BATTLE_THREE),
-    FINAL(1000, 10, 15, LootTable.BATTLE_FINAL);
+    FINAL(25, 10, 15, LootTable.BATTLE_FINAL);
 
     private int hitpoints;
     private int minDamage;
