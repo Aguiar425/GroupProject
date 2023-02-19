@@ -22,29 +22,34 @@ public class BackCommand implements CommandHandler {
                 server.broadcastMessage(game.printChapterThree());
                 game.setCurrentRoom(3);
             } else if (game.getCurrentRoom() == 10) {
-                game.getSound().getSoundLoopVar().stop();
+                game.startAndStopLoops();
+
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterTwo());
                 game.setCurrentRoom(2);
             } else if (game.getCurrentRoom() == 21) {
-                game.getSound().getSoundLoopVar().stop();
-                game.getSound().getDungeonSoundLoopVar().start();
+                game.startAndStopLoops();
+
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterOne());
                 game.setCurrentRoom(1);
             } else if (game.getCurrentRoom() == 22) {
-                game.getSound().getSoundLoopVar().stop();
+                game.startAndStopLoops();
+
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterTwo());
                 game.setCurrentRoom(2);
             } else if (game.getCurrentRoom() == 23) {
-                game.getSound().getSoundLoopVar().stop();
+                game.startAndStopLoops();
+
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterFour());
                 game.setCurrentRoom(4);
             } else if (game.getCurrentRoom() == 24) {
                 server.broadcastMessage(Messages.RUN_LAST_BATTLE);
             } else if (game.getCurrentRoom() == 31) {
+                game.startAndStopLoops();
+
                 server.broadcastMessage(game.printChapterThree());
             } else if (game.getCurrentRoom() == 32) {
                 server.broadcastMessage(game.printBattleThree());

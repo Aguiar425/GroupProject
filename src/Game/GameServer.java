@@ -98,6 +98,10 @@ public class GameServer {
         }
     }
 
+    public static void setPlayerChoices(HashMap<String, String> playerChoices) {
+        GameServer.playerChoices = playerChoices;
+    }
+
     private static void checkBattleCompletion(Monster monster) {
         if (monster.getMonsterClass().equals(MonsterClasses.BUG)) {
             Game.setBattleOneComplete(true);
@@ -114,10 +118,6 @@ public class GameServer {
         game.setGold(game.getGold() + monster.getMonsterClass().getLoot().getLootGold());
         game.setHealingPotions(game.getHealingPotions() + monster.getMonsterClass().getLoot().getLootPotions());
         game.setKeyCounter(game.getKeyCounter() + monster.getMonsterClass().getLoot().getLootKeys());
-    }
-
-    public static void setPlayerChoices(HashMap<String, String> playerChoices) {
-        GameServer.playerChoices = playerChoices;
     }
 
     public static int getPlayerLimit() {
@@ -169,8 +169,6 @@ public class GameServer {
         }));
     }
 
-    // THESE METHODS ARE RELATED TO THE PLAYER THREAD
-
     private void monsterThread() {
         waitFor();
         while (true) {
@@ -215,15 +213,17 @@ public class GameServer {
             giveLoot(monster);
             broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
             if (monster.getMonsterClass().equals(MonsterClasses.GRIFFIN)) {
+                Thread.sleep(2000);
                 broadcastMessage(game.printChestTwo());
             }
             System.out.println("monster thread goes to sleep" + Colors.RED + "DEAD" + Colors.RESET);
             waitFor();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
+    // THESE METHODS ARE RELATED TO THE PLAYER THREAD
     private void createPlayerThread(ExecutorService threadFactory, Socket clientSocket, String userName) {
         Thread t = new Thread(() -> {
             try {
@@ -290,8 +290,6 @@ public class GameServer {
         }
     }
 
-    //THESE ARE METHODS THAT ARE USED EVERYWHERE
-
     private void dealWithChoice(String msgReceived) {
         for (Map.Entry<String, String> set : playerChoices.entrySet()) {
             if (set.getKey().equals(msgReceived)) {
@@ -334,6 +332,7 @@ public class GameServer {
         }
     }
 
+    //THESE ARE METHODS THAT ARE USED EVERYWHERE
     public void broadcastMessage(String message) throws IOException {
         for (Map.Entry<String, Socket> characterName : clientMap.entrySet()) {
             writeAndSend(characterName.getValue(), message);

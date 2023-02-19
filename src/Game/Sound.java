@@ -5,8 +5,12 @@ import java.io.File;
 import java.io.IOException;
 
 public class Sound {
+    static Clip dungeonSoundLoop;
     Clip soundLoop;
-    Clip dungeonSoundLoop;
+
+    public static Clip getDungeonSoundLoopVar() {
+        return dungeonSoundLoop;
+    }
 
     public void setSoundClip(String soundPath) {
         final Clip soundClip;
@@ -58,9 +62,5 @@ public class Sound {
 
     public Clip getSoundLoopVar() {
         return soundLoop;
-    }
-
-    public Clip getDungeonSoundLoopVar() {
-        return dungeonSoundLoop;
     }
 }
