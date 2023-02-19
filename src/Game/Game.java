@@ -304,10 +304,9 @@ public class Game {
         }
     }
 
-    public String printChestOne() throws IOException { //TODO PRINT EMPTY CHEST ART
+    public String printChestOne() throws IOException { //TODO PRINT EMPTY CHEST ART and in some instances you can go /back
         setCurrentRoom(31);
         if (chestOneOpened) {
-
             return Messages.CHEST_ALREADY_OPENED;
         }
         chestOneOpened = true;
@@ -351,8 +350,8 @@ public class Game {
     }
 
     public String printBadEnding() throws IOException {
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "badEndingChoicesOne.txt"));
         setCurrentRoom(41);
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "badEndingChoicesOne.txt"));
 
         Path screen = Path.of(gameScreensDirectory + "badEnding.txt");
         Path story = Path.of(gameChaptersDirectory + "BadEndingChapterOne.txt");
@@ -380,8 +379,8 @@ public class Game {
 
     public String printDefeat() throws IOException {
         //TODO DON'T FORGET THE GAME OVER (DARKSOULS)
-        sound.getSoundLoopVar().stop();
-        sound.setSoundClip(gameSoundsDirectory + "GameOver-Theme.wav");
+        sound.getDungeonSoundLoopVar().stop();
+        sound.setSoundClip(gameSoundsDirectory + "effects/GameOver-Theme.wav");
         Path screen = Path.of(gameScreensDirectory + "gameOver.txt");
         return Files.readString(screen);
     }
