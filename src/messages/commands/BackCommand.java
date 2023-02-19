@@ -17,22 +17,28 @@ public class BackCommand implements CommandHandler {
                 server.broadcastMessage(game.printChapterOne());
                 game.setCurrentRoom(1);
             } else if (game.getCurrentRoom() == 4) {
+                //TODO add room 5 (final room)
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterThree());
                 game.setCurrentRoom(3);
             } else if (game.getCurrentRoom() == 10) {
+                game.getSound().getSoundLoopVar().stop();
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterTwo());
                 game.setCurrentRoom(2);
             } else if (game.getCurrentRoom() == 21) {
+                game.getSound().getSoundLoopVar().stop();
+                game.getSound().getDungeonSoundLoopVar().start();
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterOne());
                 game.setCurrentRoom(1);
-            }else if (game.getCurrentRoom() == 22) {
+            } else if (game.getCurrentRoom() == 22) {
+                game.getSound().getSoundLoopVar().stop();
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterTwo());
                 game.setCurrentRoom(2);
-            }else if (game.getCurrentRoom() == 23) {
+            } else if (game.getCurrentRoom() == 23) {
+                game.getSound().getSoundLoopVar().stop();
                 System.out.println("Party left room: " + game.getCurrentRoom());
                 server.broadcastMessage(game.printChapterFour());
                 game.setCurrentRoom(4);
@@ -46,7 +52,8 @@ public class BackCommand implements CommandHandler {
                 System.out.println("Party tried to leave room: " + game.getCurrentRoom() + " KEK");
                 server.broadcastMessage(Colors.RED + "You can't go back, there is no escape".toUpperCase() + Colors.RESET);
             }
-        } catch (IOException e) {
+
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

@@ -28,12 +28,15 @@ public class Game {
     private final String gameScreensDirectory = "resources/ascii/game_Screens/";
     private final String gameChaptersDirectory = "resources/chapters/";
     private final String gameChoicesDirectory = "resources/chapters/choices/";
+    private final String gameSoundsDirectory = "resources/soundFx/";
     private final Monster[] allMonsters;
     ExecutorService threadFactory;
+    Sound sound;
     private List<PlayerCharacter> party;
 
     public Game() {
         this.threadFactory = Executors.newCachedThreadPool();
+        this.sound = new Sound();
         this.inCombat = false;
         this.party = new ArrayList<PlayerCharacter>();
         this.allMonsters = new Monster[4];
@@ -74,6 +77,7 @@ public class Game {
     }
 
     public String startGame() throws IOException {
+
         populateMonsters(); //TODO CHANGE TO CHAPTER 0
         return printChapterOne();
     }
@@ -85,7 +89,8 @@ public class Game {
     }
 
     public String printChapterOne() throws IOException {
-        setCurrentRoom(1);
+        setCurrentRoom(1); //TODO try to loop the main dungoen theme without breaks
+        sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
         System.out.println("Party is in room: " + getCurrentRoom());
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterOneChoices.txt"));
@@ -97,6 +102,8 @@ public class Game {
     //THESE ARE THE METHODS TO PRINT THE BATTLE ROOMS
     public String printChapterTwo() throws IOException {
         setCurrentRoom(2);
+        //sound.getSoundLoopVar().stop();
+        //sound.setSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
         System.out.println("Party is in room: " + getCurrentRoom());
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterTwoChoices.txt"));
@@ -107,6 +114,8 @@ public class Game {
 
     public String printChapterThree() throws IOException {
         setCurrentRoom(3);
+        //sound.getSoundLoopVar().stop();
+        //sound.setSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
         System.out.println("Party is in room: " + getCurrentRoom());
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterThreeChoices.txt"));
@@ -117,6 +126,8 @@ public class Game {
 
     public String printChapterFour() throws IOException {
         setCurrentRoom(4);
+        sound.getSoundLoopVar().stop();
+        sound.setSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
         System.out.println("Party is in room: " + getCurrentRoom());
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterFourChoices.txt"));
@@ -125,14 +136,17 @@ public class Game {
         return Files.readString(screen) + "\n" + Files.readString(story);
     }
 
-    public String printBattleOne() throws IOException {
+    public String printBattleOne() throws IOException, InterruptedException {
         setCurrentRoom(21);
         if (battleOneComplete) {
-            //GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterOneChoices.txt"));
             Path screen = Path.of(gameScreensDirectory + "skull.txt");
             Path story = Path.of(gameChaptersDirectory + "Battle1_Complete.txt");
             return Files.readString(screen) + "\n" + Files.readString(story);
         } else {
+            this.sound.getDungeonSoundLoopVar().stop();
+            sound.setSoundClip(gameSoundsDirectory + "BattleStart-Theme.wav");
+            Thread.sleep(1900);
+            sound.setSoundLoop(gameSoundsDirectory + "Battle-Theme.wav");
             inCombat = true;
 
             Path screen = Path.of(gameScreensDirectory + "bug.txt");
@@ -142,14 +156,17 @@ public class Game {
     }
 
     //THESE ARE THE METHODS TO PRINT THE SHOP AND CHEST ROOMS
-    public String printBattleTwo() throws IOException {
+    public String printBattleTwo() throws IOException, InterruptedException {
         setCurrentRoom(22);
         if (battleTwoComplete) {
-            //GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterTwoChoices.txt"));
             Path screen = Path.of(gameScreensDirectory + "skull.txt");
             Path story = Path.of(gameChaptersDirectory + "Battle2_Complete.txt");
             return Files.readString(screen) + "\n" + Files.readString(story);
         } else {
+            this.sound.getDungeonSoundLoopVar().stop();
+            sound.setSoundClip(gameSoundsDirectory + "BattleStart-Theme.wav");
+            Thread.sleep(1900);
+            sound.setSoundLoop(gameSoundsDirectory + "Battle-Theme.wav");
             inCombat = true;
 
             GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "battleChoices.txt"));
@@ -159,14 +176,17 @@ public class Game {
         }
     }
 
-    public String printBattleThree() throws IOException {
+    public String printBattleThree() throws IOException, InterruptedException {
         setCurrentRoom(23);
         if (battleThreeComplete) {
-            GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterThreeChoices.txt"));
             Path screen = Path.of(gameScreensDirectory + "skull.txt");
             Path story = Path.of(gameChaptersDirectory + "Battle3_Complete.txt");
             return Files.readString(screen) + "\n" + Files.readString(story);
         } else {
+            this.sound.getDungeonSoundLoopVar().stop();
+            sound.setSoundClip(gameSoundsDirectory + "BattleStart-Theme.wav");
+            Thread.sleep(1900);
+            sound.setSoundLoop(gameSoundsDirectory + "Battle-Theme.wav");
             inCombat = true;
 
             GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "battleChoices.txt"));
@@ -177,7 +197,9 @@ public class Game {
     }
 
     public String printFinalBattle() throws IOException {
-        setCurrentRoom(24);
+        setCurrentRoom(24); //TODO KEY VALIDATION AND FINAL BOSS MUSIC
+        sound.getSoundLoopVar().stop();
+        sound.setSoundLoop(gameSoundsDirectory + "Battle-Theme.wav");
         inCombat = true;
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "battleChoices.txt"));
@@ -188,6 +210,8 @@ public class Game {
 
     public String printShop() throws IOException {
         setCurrentRoom(10);
+        sound.getSoundLoopVar().stop();
+        sound.setSoundLoop(gameSoundsDirectory + "Shop-Theme.wav");
         System.out.println("Party is on room(shop): " + getCurrentRoom());
 
         GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "shopChoices.txt"));
@@ -230,10 +254,10 @@ public class Game {
 
             return Messages.CHEST_ALREADY_OPENED;
         }
-
+        chestOneOpened = true;
         System.out.println("party is on chest room" + getCurrentRoom());
 
-        chestOneOpened = true;
+        sound.setSoundClip(gameSoundsDirectory + "Chest-Theme.wav");
         Path screen = Path.of(gameScreensDirectory + "chest.txt");
         Path story = Path.of(gameChaptersDirectory + "ChestOne.txt");
         gold += 150;
@@ -248,8 +272,10 @@ public class Game {
         chestTwoOpened = true;
         System.out.println("party is on chest room" + getCurrentRoom());
 
+        sound.setSoundClip(gameSoundsDirectory + "Chest-Theme.wav");
         Path screen = Path.of(gameScreensDirectory + "chest.txt");
         Path story = Path.of(gameChaptersDirectory + "ChestTwo.txt");
+
         for (PlayerCharacter pc :
                 party) {
             pc.setMaxHitpoints(pc.getMaxHitpoints() + 20);
@@ -280,12 +306,14 @@ public class Game {
         return Files.readString(Path.of(gameChaptersDirectory + "BadEndingChapterTwo.txt"));
     }
 
-    public String printBadChoicesThree () throws IOException{
+    public String printBadChoicesThree() throws IOException {
         GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "badEndingChoicesThree.txt"));
         return Files.readString(Path.of(gameChaptersDirectory + "BadEndingChapterThree.txt"));
     }
 
     public String printVictory(String lootMessage) throws IOException {
+        sound.getSoundLoopVar().stop();
+        sound.setSoundLoop(gameSoundsDirectory + "Victory-Theme.wav");
         inCombat = false;
         Path screen = Path.of(gameScreensDirectory + "victory.txt");
         return Files.readString(screen) + "\n The party obtained " + lootMessage +
@@ -367,6 +395,14 @@ public class Game {
 
     public void setKeyCounter(int keyCounter) {
         this.keyCounter = keyCounter;
+    }
+
+    public Sound getSound() {
+        return sound;
+    }
+
+    public void setSound(Sound sound) {
+        this.sound = sound;
     }
 }
 
