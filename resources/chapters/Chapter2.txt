@@ -3,4 +3,4 @@ As you open the door, the party comes across a hall with two doors on each side.
 
                ==== Which one do you want to go through? ====
 
-                  <L>EFT                               <R>IGHT
+              <L> - LEFT                               <R> - RIGHT
