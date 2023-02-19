@@ -1,2 +1,2 @@
-@L,printChapterFour
+@L,chapterFourAccessCondition
 @R,printChestOne

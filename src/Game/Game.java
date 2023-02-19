@@ -166,14 +166,14 @@ public class Game {
     }
 
     public String chapterFourAccessCondition() throws IOException {
-        if (this.shopHasKey || !this.partyHasRogue) {
+        if (partyHasRogue) {
+            return Messages.LOCKED_DOOR_ROGUE + "\n" + printChapterFour();
+        } else if (!shopHasKey) {
+            return printChapterFour();
+        } else {
             setCurrentRoom(51);
             Path story = Path.of(gameChaptersDirectory + "Chapter3_DoorLocked.txt");
             return Files.readString(story);
-        } else if (this.shopHasKey && this.partyHasRogue) {
-            return Messages.LOCKED_DOOR_ROGUE + "\n" + printChapterFour();
-        } else {
-            return printChapterFour();
         }
     }
 
