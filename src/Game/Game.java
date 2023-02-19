@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 public class Game {
     private static int currentRoom;
     private static boolean inCombat;
+    private static boolean bossBattle;
     private static Boolean battleOneComplete;
     private static Boolean battleTwoComplete;
     private static Boolean battleThreeComplete;
@@ -41,6 +42,7 @@ public class Game {
         this.threadFactory = Executors.newCachedThreadPool();
         this.sound = new Sound();
         this.inCombat = false;
+        this.bossBattle = false;
         this.party = new ArrayList<PlayerCharacter>();
         this.partyHasRogue = false;
         this.allMonsters = new Monster[4];
@@ -277,7 +279,7 @@ public class Game {
         setCurrentRoom(24);
         sound.getSoundLoopVar().stop();
         sound.setSoundLoop(gameSoundsDirectory + "FinalBoss-Theme.wav");
-        inCombat = true;
+        bossBattle = true;
 
         Path screen = Path.of(gameScreensDirectory + "dragon.txt");
         Path story = Path.of(gameChaptersDirectory + "BattleFinal.txt");
@@ -481,6 +483,10 @@ public class Game {
     public void startAndStopLoops() {
         this.sound.getSoundLoopVar().stop();
         //this.sound.getDungeonSoundLoopVar().stop();
+    }
+
+    public boolean isBossBattle() {
+        return bossBattle;
     }
 
     void printMainMenu(GameServer gameServer) throws IOException {

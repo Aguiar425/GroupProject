@@ -173,11 +173,26 @@ public class GameServer {
                 } else {
                     continueBattle();
                 }
+            } else if (game.isBossBattle()) {
+                Monster monster = game.getAllMonsters();
+                if (monster.getHitpoints() <= 0) {
+                    monster.setAlive(false);
+                }
+                if (!monster.getAlive()) {
+                    bossBattleEndAction(monster);
+                } else {
+                    continueBattle();
+                }
             } else {
                 System.out.println("monster thread goes to sleep" + Colors.RED + "NOT A BATTLE" + Colors.RESET);
                 waitFor();
             }
         }
+    }
+
+
+    private void bossBattleEndAction(Monster monster) {
+        //TODO make boss battle victory screen and end of game good ending
     }
 
     private void continueBattle() {
