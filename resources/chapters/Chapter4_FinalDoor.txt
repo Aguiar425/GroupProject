@@ -1,4 +1,4 @@
            This door seems locked...
-        You need to three keys to open it
+        You need three keys to open it
 
        go back to return to your adventure

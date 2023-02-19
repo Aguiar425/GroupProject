@@ -28,6 +28,11 @@ public class GameServer {
     private static int playerTurn = 0;
     private static Game game;
     private static boolean occupied = false;
+    private static boolean specialOne = true;
+    private static boolean specialTwo = true;
+    private static boolean specialThree = true;
+    private static boolean specialFour = true;
+    private static boolean specialFive = true;
 
     public GameServer() {
         game = new Game();
@@ -188,6 +193,7 @@ public class GameServer {
                     battleEndAction(monster);
 
                 } else {
+                    bossBehaviour(monster);
                     System.out.println("continue battle");
                     //        Monster monster;
                     //        monster = game.getAllMonsters();
@@ -206,6 +212,38 @@ public class GameServer {
                 waitFor();
             }
         }
+    }
+
+    private void bossBehaviour(Monster monster) throws IOException {
+        if (game.isBossBattle() && specialFive && monster.getHitpoints() <= 50) {
+            specialFive = false;
+            broadcastMessage("GIT DRAGON: " + Colors.RED + "HAHAHAHAHAHAHHAH" + Colors.RESET);
+            broadcastMessage("YOU LEAVE ME NO CHOICE");
+            broadcastMessage("you think you can program...");
+            broadcastMessage("but...");
+            broadcastMessage("CAN");
+            broadcastMessage("YOU");
+            broadcastMessage(Colors.RED + "GIT?????" + Colors.RESET);
+            broadcastMessage(Colors.YELLOW + "GIT FUCKED" + Colors.RESET);
+        } else if (game.isBossBattle() && specialFour && monster.getHitpoints() <= 100) {
+            specialFour = false;
+            broadcastMessage("GIT DRAGON: " + Colors.RED + "YOU..." + Colors.RESET);
+            broadcastMessage("the audacity you possess...");
+            broadcastMessage("you really think you can best " + Colors.RED + "ME?" + Colors.RESET);
+        } else if (game.isBossBattle() && specialThree && monster.getHitpoints() <= 150) {
+            specialThree = false;
+            broadcastMessage("GIT DRAGON: " + Colors.RED + "UGHHHHHH" + Colors.RESET);
+            broadcastMessage("how dare you...");
+        } else if (game.isBossBattle() && specialTwo && monster.getHitpoints() <= 200) {
+            specialTwo = false;
+            broadcastMessage("GIT DRAGON: " + Colors.RED + "HAHAHA" + Colors.RESET);
+            broadcastMessage("come at me young devs, show me what you got");
+        } else if (game.isBossBattle() && specialOne && monster.getHitpoints() <= 250) {
+            specialOne = false;
+            broadcastMessage("GIT DRAGON: HA HA HA HA");
+            broadcastMessage("you guys are quite humorous");
+        }
+
     }
 
     private void continueBattle(Monster monster) {

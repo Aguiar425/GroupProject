@@ -55,7 +55,7 @@ public class Game {
         this.healingPotions = 0;
         //this.battleFinalComplete = false;
         this.shopHasKey = true;
-        this.keyCounter = 3; //TODO NOT FINAL
+        this.keyCounter = 0; //TODO NOT FINAL
         this.chestOneOpened = false;
         this.chestTwoOpened = false;
         this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
@@ -166,11 +166,11 @@ public class Game {
     }
 
     public String chapterFourAccessCondition() throws IOException {
-        if (shopHasKey && !partyHasRogue) {
+        if (this.shopHasKey || !this.partyHasRogue) {
             setCurrentRoom(51);
             Path story = Path.of(gameChaptersDirectory + "Chapter3_DoorLocked.txt");
             return Files.readString(story);
-        } else if (shopHasKey && partyHasRogue) {
+        } else if (this.shopHasKey && this.partyHasRogue) {
             return Messages.LOCKED_DOOR_ROGUE + "\n" + printChapterFour();
         } else {
             return printChapterFour();
