@@ -1,3 +1,5 @@
+
+
                              ==== CAREFUL ====
 
 There is a giant hole ahead of you! Pressing onwards would only end in certain death...
@@ -5,3 +7,4 @@ There is a giant hole ahead of you! Pressing onwards would only end in certain d
                          Do you want to keep going?
 
                     <Y> - Yes                 /back - No
+

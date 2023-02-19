@@ -53,26 +53,27 @@ public class GameServer {
                 classChoice(clientSocket, consoleInput, userName, playerClass);
 
                 totalPlayers++;
-
                 if (totalPlayers < playerLimit) {
-                    broadcastMessage(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
+                    broadcastMessage(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET + "\n");
 
                     System.out.println(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
 
                     createPlayerThread(threadFactory, clientSocket, userName);
                 } else if (totalPlayers == playerLimit) {
-                    broadcastMessage(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
-                    broadcastMessage(Colors.BLUE + Messages.GAME_STARTED + Colors.RESET);
+
+                    broadcastMessage(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET + "\n");
+                    broadcastMessage(Colors.BLUE + Messages.GAME_STARTED + Colors.RESET + "\n");
 
                     System.out.println(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     System.out.println(Messages.GAME_STARTED);
-
+                    Thread.sleep(500);
                     game.printMainMenu(this); //TODO new game selection SERIALIZABLE
                     Thread.sleep(5000);
                     broadcastMessage(game.startGame());
                     //choicesSetup("resources/chapters/choices/chapterZeroChoices.txt");
                     createPlayerThread(threadFactory, clientSocket, userName);
                     createMonsterThread(threadFactory);
+
                 } else {
                     System.out.println(Messages.PLAYER_LIMIT);
                 }
@@ -325,19 +326,24 @@ public class GameServer {
     //THESE ARE METHODS THAT ARE USED EVERYWHERE
     public void broadcastMessage(String message) throws IOException {
         for (Map.Entry<String, Socket> characterName : clientMap.entrySet()) {
-            writeAndSend(characterName.getValue(), message);
+            try {
+                broadcastLineByLine(characterName.getValue(), message);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
 
-    public void writeAndSend2(Socket clientSocket, String message) throws IOException, InterruptedException {
+    public void broadcastLineByLine(Socket clientSocket, String message) throws IOException, InterruptedException {
         BufferedWriter outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         String[] lines = message.split("\n");
+        //outputName.newLine();
         for (String line : lines) {
             outputName.write(line);
-            outputName.newLine();
+            //outputName.newLine();
             outputName.flush();
-            Thread.sleep(10); // pause for 1 second between each line
+            Thread.sleep(25); // pause for 1 second between each line
         }
     }
 
