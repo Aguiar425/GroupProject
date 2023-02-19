@@ -13,6 +13,8 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -156,14 +158,14 @@ public class GameServer {
                 System.out.println("monster thread goes to sleep");
                 try {
                     monsterThread();
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
         }));
     }
 
-    private void monsterThread() throws IOException {
+    private void monsterThread() throws IOException, InterruptedException {
         waitFor();
         while (true) {
             if (game.isInCombat() && game.isBossBattle()) {
@@ -174,9 +176,10 @@ public class GameServer {
                 }
                 if (monster.getHitpoints() <= 0) {
                     monster.setAlive(false);
+                    checkBattleCompletion(monster);
                 }
                 if (!monster.getAlive()) {
-                    bossBattleEndAction(monster);
+                    battleEndAction(monster);
                 } else {
                     continueBattle();
                 }
@@ -198,11 +201,6 @@ public class GameServer {
         }
     }
 
-
-    private void bossBattleEndAction(Monster monster) {
-        //TODO make boss battle victory screen and end of game good ending
-    }
-
     private void continueBattle() {
         Monster monster;
         monster = game.getAllMonsters();
@@ -218,11 +216,16 @@ public class GameServer {
     }
 
     private void battleEndAction(Monster monster) {
+        String gameChaptersDirectory = "resources/chapters/";
+        String gameSoundsDirectory = "resources/soundFx/";
         try {
             playerTurn = 0;
             this.notifyAll();
             System.out.println("monster died");
             System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
+            if(monster.getMonsterClass().equals(MonsterClasses.FINAL)){
+                broadcastEpilogue(gameChaptersDirectory, gameSoundsDirectory);
+            }
             giveLoot(monster);
             broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
             if (monster.getMonsterClass().equals(MonsterClasses.GRIFFIN)) {
@@ -234,6 +237,17 @@ public class GameServer {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void broadcastEpilogue(String gameChaptersDirectory, String gameSoundsDirectory) throws InterruptedException, IOException {
+        game.sound.getDungeonSoundLoopVar().stop();
+        game.sound.setSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
+        Thread.sleep(5000);
+        broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterOne.txt")));
+        Thread.sleep(5000);
+        broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterTwo.txt")));
+        Thread.sleep(5000);
+        broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterThree.txt")));
     }
 
     // THESE METHODS ARE RELATED TO THE PLAYER THREAD
@@ -257,7 +271,7 @@ public class GameServer {
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
-                    if (game.isInCombat()) {
+                    if (game.isInCombat() || game.isBossBattle()) {
                         synchronized (this) {
                             occupied = true;
                             playerTurn(user, socket, msgReceived);
