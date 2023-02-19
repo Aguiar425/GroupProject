@@ -28,11 +28,6 @@ public class GameServer {
     private static int playerTurn = 0;
     private static Game game;
     private static boolean occupied = false;
-    private static boolean specialOne = true;
-    private static boolean specialTwo = true;
-    private static boolean specialThree = true;
-    private static boolean specialFour = true;
-    private static boolean specialFive = true;
 
     public GameServer() {
         game = new Game();
@@ -132,7 +127,6 @@ public class GameServer {
 
     public static void setPlayerTurn(int playerTurn) {
         GameServer.playerTurn = playerTurn;
-        System.out.println("Initialize playerTurn = " + playerTurn);
     }
 
     private void classChoice(Socket clientSocket, BufferedReader consoleInput, String userName, String playerClass) throws IOException {
@@ -174,15 +168,12 @@ public class GameServer {
     private void monsterThread() throws IOException, InterruptedException {
         waitFor();
         while (true) {
-            playerTurn = 0;
-            System.out.println("Monster FIRST playerTurn = " + playerTurn);
             if (game.isInCombat() && game.isBossBattle()) {
                 Monster monster = game.getAllMonsters();
-
                 if (game.isFirstBossTurn()) {
                     game.setFirstBossTurn(false);
                     broadcastMessage(game.printFinalBattle());
-                    //Thread.sleep(100);
+                    Thread.sleep(100);
                 }
                 if (monster.getHitpoints() <= 0) {
                     monster.setAlive(false);
@@ -191,11 +182,6 @@ public class GameServer {
                 if (!monster.getAlive()) {
                     battleEndAction(monster);
                 } else {
-                    System.out.println("specialOne = " + specialOne);
-                    System.out.println("specialTwo = " + specialTwo);
-                    System.out.println("specialThree = " + specialThree);
-                    System.out.println("specialFour = " + specialFour);
-                    System.out.println("specialFive = " + specialFive);
                     continueBattle();
                 }
             } else if (game.isInCombat()) {
@@ -218,18 +204,12 @@ public class GameServer {
         }
     }
 
-    private void bossBehaviour(Monster monster) throws IOException {
-
-    }
-
     private void continueBattle() {
         Monster monster;
         monster = game.getAllMonsters();
         try {
             broadcastMessage(game.monsterAttack(monster));
-            System.out.println("Monster playerTurn set = " + playerTurn);
             playerTurn = 0;
-            System.out.println("Monster playerTurn set = " + playerTurn);
             this.notifyAll();
             System.out.println("monster thread goes to sleep");
             waitFor();
@@ -242,9 +222,7 @@ public class GameServer {
         String gameChaptersDirectory = "resources/chapters/";
         String gameSoundsDirectory = "resources/soundFx/";
         try {
-            System.out.println("VICTORY playerTurn = " + playerTurn);
             playerTurn = 0;
-            System.out.println("VICTORY playerTurn = " + playerTurn);
             this.notifyAll();
             System.out.println("monster died");
             System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
@@ -298,7 +276,7 @@ public class GameServer {
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
-                    if (game.isInCombat()) {
+                    if (game.isInCombat() || game.isBossBattle()) {
                         synchronized (this) {
                             //occupied = true;
                             playerTurn(user, socket, msgReceived);
@@ -332,18 +310,12 @@ public class GameServer {
         playerTurn++;
         if (!game.isInCombat()) {
             occupied = false;
-            System.out.println("IF playerTurn = " + playerTurn);
             playerTurn = 0;
-            System.out.println("IF playerTurn = " + playerTurn);
         } else {
-            System.out.println("ELSE playerTurn = " + playerTurn);
-            System.out.println("ELSE playerTurn = " + playerTurn);
             if (playerTurn >= playerLimit) {
                 System.out.println("wake the monster thread");
-                System.out.println("playerTurn = " + playerTurn);
                 this.notifyAll();
             }
-            //Thread.sleep(1000);
             occupied = false;
             this.wait();
         }
