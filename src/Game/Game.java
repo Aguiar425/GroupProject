@@ -498,5 +498,7 @@ public class Game {
         String content = Files.readString(filePath);
         gameServer.broadcastMessage(content);
     }
+
+
 }
 

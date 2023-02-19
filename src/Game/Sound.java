@@ -57,7 +57,6 @@ public class Sound {
         }
         dungeonSoundLoop.setFramePosition(0);
         dungeonSoundLoop.start();
-
     }
 
     public Clip getSoundLoopVar() {

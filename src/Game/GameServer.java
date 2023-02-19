@@ -196,13 +196,15 @@ public class GameServer {
         }
     }
 
-
     private void bossBattleEndAction(Monster monster) throws InterruptedException, IOException {
         String gameChaptersDirectory = "resources/chapters/";
         String gameSoundsDirectory = "resources/soundFx/";
 
+        playerTurn = 0;
+        this.notifyAll();
+
         game.sound.getDungeonSoundLoopVar().stop();
-        game.sound.setDungeonSoundLoop(gameSoundsDirectory + "Epilogue-Theme.wav");
+        game.sound.setSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
         Thread.sleep(3000);
         broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterOne.txt")));
         Thread.sleep(3000);
@@ -227,11 +229,16 @@ public class GameServer {
     }
 
     private void battleEndAction(Monster monster) {
+        String gameChaptersDirectory = "resources/chapters/";
+        String gameSoundsDirectory = "resources/soundFx/";
         try {
             playerTurn = 0;
             this.notifyAll();
             System.out.println("monster died");
             System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
+            if(monster.getMonsterClass().equals(MonsterClasses.FINAL)){
+                broadcastEpilogue(gameChaptersDirectory, gameSoundsDirectory);
+            }
             giveLoot(monster);
             broadcastMessage(game.printVictory(monster.getMonsterClass().getLoot().getLootDescription()));
             if (monster.getMonsterClass().equals(MonsterClasses.GRIFFIN)) {
@@ -243,6 +250,17 @@ public class GameServer {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void broadcastEpilogue(String gameChaptersDirectory, String gameSoundsDirectory) throws InterruptedException, IOException {
+        game.sound.getDungeonSoundLoopVar().stop();
+        game.sound.setSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
+        Thread.sleep(5000);
+        broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterOne.txt")));
+        Thread.sleep(5000);
+        broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterTwo.txt")));
+        Thread.sleep(5000);
+        broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterThree.txt")));
     }
 
     // THESE METHODS ARE RELATED TO THE PLAYER THREAD
