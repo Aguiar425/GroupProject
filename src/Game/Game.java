@@ -53,7 +53,7 @@ public class Game {
         this.keyCounter = 0;
         this.chestOneOpened = false;
         this.chestTwoOpened = false;
-        this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
+        this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
         this.sound.getDungeonSoundLoopVar().stop();
     }
 
@@ -90,18 +90,18 @@ public class Game {
     }
 
     public String startGame() throws IOException {
-
+        //this.sound.getSoundLoopVar().start();
         for (PlayerCharacter pc : party) {
             if (pc.getCharacterClass().equals(CharacterClasses.ROGUE)) {
                 setPartyHasRogue(true);
             }
         }
-        populateMonsters(); //TODO CHANGE TO CHAPTER 0
+        populateMonsters();
         return printChapterZero();
     }
 
     //THERE ARE THE METHODS FOR PRINTING THE DIFFERENT ROOMS
-    public String printChapterZero() throws IOException { //TODO IMPLEMENT CHAPTER ZERO AND ADD DELAY BETWEEN SCREENS. MAYBE WAIT FOR ANY INPUT?
+    public String printChapterZero() throws IOException {
         setCurrentRoom(0);
         System.out.println("Party is in room: " + getCurrentRoom());
 
@@ -115,6 +115,11 @@ public class Game {
     public String printChapterOne() throws IOException {
         setCurrentRoom(1);
         if (!Sound.getDungeonSoundLoopVar().isRunning()) {
+            this.sound.getDungeonSoundLoopVar().start();
+        }
+        else {
+            this.sound.getDungeonSoundLoopVar().stop();
+            this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
             this.sound.getDungeonSoundLoopVar().start();
         }
         System.out.println("Party is in room: " + getCurrentRoom());
@@ -468,6 +473,8 @@ public class Game {
 
     void printMainMenu(GameServer gameServer) throws IOException {
         GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterZeroChoices.txt"));
+        this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
+        this.sound.getDungeonSoundLoopVar().start();
 
         Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
         String content = Files.readString(filePath);
