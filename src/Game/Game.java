@@ -511,28 +511,34 @@ public class Game implements Serializable {
         Game.firstBossTurn = firstBossTurn;
     }
 
-    void printMainMenu(GameServer gameServer) throws IOException {
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterZeroChoices.txt"));
+    public String printMainMenu() throws IOException {
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "MainMenuChoices.txt"));
         this.sound.setSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
         this.sound.getSoundLoopVar().start();
 
-        Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
+        Path filePath = Path.of(gameScreensDirectory + "mainMenu.txt");
         String content = Files.readString(filePath);
-        gameServer.broadcastMessage(content);
+        return content;
     }
 
     public void saveGame() throws IOException {
         FileOutputStream saver = new FileOutputStream("resources/saveFile/File");
         ObjectOutputStream oos = new ObjectOutputStream(saver);
         oos.writeObject(this);
+        System.out.println("saved game : " + this);
         oos.close();
     }
 
     public static Game loadGame() throws IOException, ClassNotFoundException {
-        FileInputStream loader = new FileInputStream("resources/saveFile/File");
-        ObjectInputStream ois = new ObjectInputStream(loader);
-        return (Game) ois.readObject();
-    }
+        if(Path.of("resources/saveFile/File").equals(null)){
+            System.out.println("No save file");
+            return null;
+        } else {
 
+            FileInputStream loader = new FileInputStream("resources/saveFile/File");
+            ObjectInputStream ois = new ObjectInputStream(loader);
+            return (Game) ois.readObject();
+        }
+    }
 }
 

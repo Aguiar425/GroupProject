@@ -69,9 +69,9 @@ public class GameServer implements Serializable {
                     System.out.println(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     System.out.println(Messages.GAME_STARTED);
 
-                    game.printMainMenu(this); //TODO new game selection SERIALIZABLE
-                    Thread.sleep(5000);
-                    broadcastMessage(game.startGame());
+                    broadcastMessage(game.printMainMenu()); //TODO new game selection SERIALIZABLE
+                    //Thread.sleep(5000);
+                    //broadcastMessage(game.startGame());
                     //choicesSetup("resources/chapters/choices/chapterZeroChoices.txt");
                     createPlayerThread(threadFactory, clientSocket, userName);
                     createMonsterThread(threadFactory);
@@ -79,7 +79,7 @@ public class GameServer implements Serializable {
                     System.out.println(Messages.PLAYER_LIMIT);
                 }
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
