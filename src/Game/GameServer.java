@@ -13,6 +13,8 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -154,12 +156,16 @@ public class GameServer {
         threadFactory.submit(new Thread(() -> {
             synchronized (this) {
                 System.out.println("monster thread goes to sleep");
-                monsterThread();
+                try {
+                    monsterThread();
+                } catch (IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }));
     }
 
-    private void monsterThread() {
+    private void monsterThread() throws IOException, InterruptedException {
         waitFor();
         while (true) {
             if (game.isInCombat()) {
@@ -191,7 +197,18 @@ public class GameServer {
     }
 
 
-    private void bossBattleEndAction(Monster monster) {
+    private void bossBattleEndAction(Monster monster) throws InterruptedException, IOException {
+        String gameChaptersDirectory = "resources/chapters/";
+        String gameSoundsDirectory = "resources/soundFx/";
+
+        game.sound.getDungeonSoundLoopVar().stop();
+        game.sound.setDungeonSoundLoop(gameSoundsDirectory + "Epilogue-Theme.wav");
+        Thread.sleep(3000);
+        broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterOne.txt")));
+        Thread.sleep(3000);
+        broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterTwo.txt")));
+        Thread.sleep(3000);
+        broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterThree.txt")));
         //TODO make boss battle victory screen and end of game good ending
     }
 
