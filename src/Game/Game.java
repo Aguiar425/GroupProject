@@ -35,6 +35,7 @@ public class Game {
     ExecutorService threadFactory;
     Sound sound;
     private List<PlayerCharacter> party;
+    private boolean enterTheDungeon;
 
     public Game() {
         this.threadFactory = Executors.newCachedThreadPool();
@@ -53,8 +54,9 @@ public class Game {
         this.keyCounter = 0;
         this.chestOneOpened = false;
         this.chestTwoOpened = false;
-        this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
+        this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
         this.sound.getDungeonSoundLoopVar().stop();
+        this.enterTheDungeon = true;
     }
 
     public static void setBattleOneComplete(Boolean battleOneComplete) {
@@ -109,17 +111,19 @@ public class Game {
 
         Path story = Path.of(gameChaptersDirectory + "Chapter0.txt");
         Path screen = Path.of(gameScreensDirectory + "castle.txt");
-        return Files.readString(screen) + "\n" + Files.readString(story) ;
+        return Files.readString(screen) + "\n" + Files.readString(story);
     }
 
     public String printChapterOne() throws IOException {
         setCurrentRoom(1);
-        if (!Sound.getDungeonSoundLoopVar().isRunning()) {
-            this.sound.getDungeonSoundLoopVar().start();
+        if (sound.getSoundLoopVar().isRunning()) {
+            this.sound.getSoundLoopVar().stop();
         }
-        else {
-            this.sound.getDungeonSoundLoopVar().stop();
-            this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
+        if (enterTheDungeon) {
+            this.sound.setSoundClip(gameSoundsDirectory + "effects/Door close.wav");
+            enterTheDungeon = false;
+        }
+        if (!Sound.getDungeonSoundLoopVar().isRunning()) {
             this.sound.getDungeonSoundLoopVar().start();
         }
         System.out.println("Party is in room: " + getCurrentRoom());
@@ -319,7 +323,7 @@ public class Game {
         setCurrentRoom(31);
         if (chestOneOpened) {
             Path screen = Path.of(gameScreensDirectory + "emptyChest.txt");
-            return Files.readString(screen) +"\n"+Messages.CHEST_ALREADY_OPENED;
+            return Files.readString(screen) + "\n" + Messages.CHEST_ALREADY_OPENED;
         }
         chestOneOpened = true;
         System.out.println("party is on chest room" + getCurrentRoom());
@@ -468,13 +472,13 @@ public class Game {
 
     public void startAndStopLoops() {
         this.sound.getSoundLoopVar().stop();
-        this.sound.getDungeonSoundLoopVar().stop();
+        //this.sound.getDungeonSoundLoopVar().stop();
     }
 
     void printMainMenu(GameServer gameServer) throws IOException {
         GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterZeroChoices.txt"));
-        this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
-        this.sound.getDungeonSoundLoopVar().start();
+        this.sound.setSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
+        this.sound.getSoundLoopVar().start();
 
         Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
         String content = Files.readString(filePath);
