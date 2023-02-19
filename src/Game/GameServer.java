@@ -329,6 +329,18 @@ public class GameServer {
         }
     }
 
+
+    public void writeAndSend2(Socket clientSocket, String message) throws IOException, InterruptedException {
+        BufferedWriter outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+        String[] lines = message.split("\n");
+        for (String line : lines) {
+            outputName.write(line);
+            outputName.newLine();
+            outputName.flush();
+            Thread.sleep(10); // pause for 1 second between each line
+        }
+    }
+
     public void writeAndSend(Socket clientSocket, String message) throws IOException {
         BufferedWriter outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         outputName.write(message);
