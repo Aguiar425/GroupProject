@@ -169,7 +169,7 @@ public class Game {
         sound.setSoundLoop(gameSoundsDirectory + "FinalRoom.wav");
         System.out.println("Party is in room : Before Final Boss");
 
-        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterFourChoices.txt"));
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterFiveChoices.txt"));
         Path story = Path.of(gameChaptersDirectory + "Chapter5.txt");
         return Files.readString(story);
     }
