@@ -246,7 +246,7 @@ public class GameServer {
 
     private void broadcastEpilogue(String gameChaptersDirectory, String gameSoundsDirectory) throws InterruptedException, IOException {
         game.sound.getSoundLoopVar().stop();
-        game.sound.setSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
+        game.sound.setSoundLoop(gameSoundsDirectory + "Ending-Theme.wav");
         Thread.sleep(5000);
         broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterOne.txt")));
         Thread.sleep(5000);
