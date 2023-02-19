@@ -173,6 +173,7 @@ public class GameServer {
                 if (game.isFirstBossTurn()) {
                     game.setFirstBossTurn(false);
                     broadcastMessage(game.printFinalBattle());
+                    Thread.sleep(1000);
                 }
                 if (monster.getHitpoints() <= 0) {
                     monster.setAlive(false);
