@@ -249,7 +249,7 @@ public class GameServer {
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
-                    if (game.isInCombat()) {
+                    if (game.isInCombat() || game.isBossBattle()) {
                         synchronized (this) {
                             occupied = true;
                             playerTurn(user, socket, msgReceived);
