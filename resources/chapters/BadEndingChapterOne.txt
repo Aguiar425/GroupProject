@@ -1,7 +1,7 @@
-                    ==== CAREFUL ====
+                             ==== CAREFUL ====
 
 There is a giant hole ahead of you! Pressing onwards would only end in certain death...
 
-                   Do you want to keep going?
+                         Do you want to keep going?
 
-                 <Y> - Yes                 /back - No
+                    <Y> - Yes                 /back - No

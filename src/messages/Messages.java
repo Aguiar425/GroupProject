@@ -34,4 +34,5 @@ public abstract class Messages {
     public static final String POTION_BOUGHT = "You have bought a healing potion";
     public static final String CHEST_ALREADY_OPENED = "This chest is empty.\nGo back to continue your adventure";
     public static final String NO_BATTLE_COMMAND = Colors.RED + "NO SUCH COMMAND EXISTS" + Colors.RESET;
+    public static final String LOCKED_DOOR_ROGUE = "This door was locked but the Rogue in your party managed to pick the lock.\nYou may proceed.";
 }

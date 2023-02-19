@@ -34,12 +34,14 @@ public class Game {
     ExecutorService threadFactory;
     Sound sound;
     private List<PlayerCharacter> party;
+    private static Boolean partyHasRogue;
 
     public Game() {
         this.threadFactory = Executors.newCachedThreadPool();
         this.sound = new Sound();
         this.inCombat = false;
         this.party = new ArrayList<PlayerCharacter>();
+        this.partyHasRogue = false;
         this.allMonsters = new Monster[4];
         this.gold = 50;
         this.battleOneComplete = false;
@@ -81,6 +83,11 @@ public class Game {
 
     public String startGame() throws IOException {
 
+        for (PlayerCharacter pc: party) {
+            if(pc.getCharacterClass().equals(CharacterClasses.ROGUE)){
+                setPartyHasRogue(true);
+            }
+        }
         populateMonsters(); //TODO CHANGE TO CHAPTER 0
         return printChapterOne();
     }
@@ -131,6 +138,18 @@ public class Game {
     }
 
     public String printChapterFour() throws IOException {
+        if(shopHasKey && !partyHasRogue){
+            setCurrentRoom(51);
+            Path story = Path.of(gameChaptersDirectory + "Chapter3_DoorLocked.txt");
+            return Files.readString(story);
+        } else if (shopHasKey && partyHasRogue) {
+            return Messages.LOCKED_DOOR_ROGUE+"\n" + accessChapterFour();
+        } else {
+            return accessChapterFour();
+        }
+    }
+
+    private String accessChapterFour() throws IOException {
         setCurrentRoom(4);
         if (!sound.getDungeonSoundLoopVar().isRunning()) {
             this.sound.getDungeonSoundLoopVar().start();
@@ -144,10 +163,15 @@ public class Game {
     }
 
     public String printChapterFinal() throws IOException {
-        sound.getDungeonSoundLoopVar().stop();
-        sound.setSoundLoop(gameSoundsDirectory + "Shop-Theme.wav");
+        setCurrentRoom(5);
 
-        return null;
+        sound.getDungeonSoundLoopVar().stop();
+        sound.setSoundLoop(gameSoundsDirectory + "FinalRoom.wav");
+        System.out.println("Party is in room : Before Final Boss");
+
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterFourChoices.txt"));
+        Path story = Path.of(gameChaptersDirectory + "Chapter5.txt");
+        return Files.readString(story);
     }
 
     //THESE ARE THE METHODS TO PRINT THE BATTLE ROOMS
@@ -411,6 +435,14 @@ public class Game {
 
     public void setKeyCounter(int keyCounter) {
         this.keyCounter = keyCounter;
+    }
+
+    public static Boolean getPartyHasRogue() {
+        return partyHasRogue;
+    }
+
+    public static void setPartyHasRogue(Boolean partyHasRogue) {
+        Game.partyHasRogue = partyHasRogue;
     }
 
     public void startAndStopLoops() {

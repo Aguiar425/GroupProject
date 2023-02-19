@@ -1,0 +1,13 @@
+█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░
+█                                                                   █
+▒                          This is it.                              █
+▒          Ahead of you lies the lord of this castle.               ▒
+░                                                                   ▒
+░ If you keep going you will surely engage in a fight to the death. ░
+█                                                                   ░
+░                                                                   ▒
+░                       Are you ready?                              ░
+█                                                                   ░
+▒                 <Y> - Yes     /back - No                          █
+░                                                                   ▒
+█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░░█▒▒░
