@@ -1,6 +1,8 @@
 package gameObjects;
 
-public class PlayerCharacter {
+import java.io.Serializable;
+
+public class PlayerCharacter implements Serializable {
 
     private CharacterClasses characterClass;
     private String name;

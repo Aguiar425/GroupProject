@@ -21,7 +21,7 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class GameServer {
+public class GameServer implements Serializable {
     private static HashMap<String, Socket> clientMap = new HashMap<>();
     private static HashMap<String, String> playerChoices = new HashMap<>();
     private static int playerLimit;

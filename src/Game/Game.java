@@ -4,7 +4,7 @@ import gameObjects.*;
 import messages.Colors;
 import messages.Messages;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Game {
+public class Game implements Serializable {
+    private static final long serialVersionUID = 1234567L;
     private static int currentRoom;
     private static boolean inCombat;
     private static boolean bossBattle;
@@ -520,6 +521,18 @@ public class Game {
         gameServer.broadcastMessage(content);
     }
 
+    public void saveGame() throws IOException {
+        FileOutputStream saver = new FileOutputStream("resources/saveFile/File");
+        ObjectOutputStream oos = new ObjectOutputStream(saver);
+        oos.writeObject(this);
+        oos.close();
+    }
+
+    public static Game loadGame() throws IOException, ClassNotFoundException {
+        FileInputStream loader = new FileInputStream("resources/saveFile/File");
+        ObjectInputStream ois = new ObjectInputStream(loader);
+        return (Game) ois.readObject();
+    }
 
 }
 

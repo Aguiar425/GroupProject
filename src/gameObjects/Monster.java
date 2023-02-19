@@ -1,6 +1,8 @@
 package gameObjects;
 
-public class Monster {
+import java.io.Serializable;
+
+public class Monster implements Serializable {
 
     private MonsterClasses monsterClass;
     private int hitpoints;
