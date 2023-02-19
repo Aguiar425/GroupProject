@@ -16,6 +16,7 @@ public class Game {
     private static int currentRoom;
     private static boolean inCombat;
     private static boolean bossBattle;
+    private static boolean firstBossTurn;
     private static Boolean battleOneComplete;
     private static Boolean battleTwoComplete;
     private static Boolean battleThreeComplete;
@@ -43,6 +44,7 @@ public class Game {
         this.sound = new Sound();
         this.inCombat = false;
         this.bossBattle = false;
+        this.firstBossTurn = false;
         this.party = new ArrayList<PlayerCharacter>();
         this.partyHasRogue = false;
         this.allMonsters = new Monster[4];
@@ -53,7 +55,7 @@ public class Game {
         this.healingPotions = 0;
         //this.battleFinalComplete = false;
         this.shopHasKey = true;
-        this.keyCounter = 0;
+        this.keyCounter = 3; //TODO NOT FINAL
         this.chestOneOpened = false;
         this.chestTwoOpened = false;
         this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
@@ -275,14 +277,25 @@ public class Game {
         }
     }
 
-    public String printFinalBattle() throws IOException {
+    public String printPrepFinalBattle() throws IOException {
         setCurrentRoom(24);
         sound.getSoundLoopVar().stop();
-        sound.setSoundLoop(gameSoundsDirectory + "FinalBoss-Theme.wav");
+        //sound.setSoundLoop(gameSoundsDirectory + "FinalBoss-Theme.wav");
+        inCombat = true;
         bossBattle = true;
+        firstBossTurn = true;
+
+        Path screen = Path.of(gameScreensDirectory + "sleepingDragon.txt");
+        Path story = Path.of(gameChaptersDirectory + "BattleFinal.txt");
+        return Files.readString(screen) + "\n" + Files.readString(story);
+    }
+
+    public String printFinalBattle() throws IOException {
+        sound.setSoundLoop(gameSoundsDirectory + "FinalBoss-Theme.wav");
+        sound.setSoundClip(gameSoundsDirectory + "effects/Kefka-laugh-sound-effect.wav");
 
         Path screen = Path.of(gameScreensDirectory + "dragon.txt");
-        Path story = Path.of(gameChaptersDirectory + "BattleFinal.txt");
+        Path story = Path.of(gameChaptersDirectory + "FinalBattleBegins");
         return Files.readString(screen) + "\n" + Files.readString(story);
     }
 
@@ -487,6 +500,14 @@ public class Game {
 
     public boolean isBossBattle() {
         return bossBattle;
+    }
+
+    public boolean isFirstBossTurn() {
+        return firstBossTurn;
+    }
+
+    public void setFirstBossTurn(boolean firstBossTurn) {
+        Game.firstBossTurn = firstBossTurn;
     }
 
     void printMainMenu(GameServer gameServer) throws IOException {

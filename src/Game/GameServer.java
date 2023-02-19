@@ -154,15 +154,33 @@ public class GameServer {
         threadFactory.submit(new Thread(() -> {
             synchronized (this) {
                 System.out.println("monster thread goes to sleep");
-                monsterThread();
+                try {
+                    monsterThread();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }));
     }
 
-    private void monsterThread() {
+    private void monsterThread() throws IOException {
         waitFor();
         while (true) {
-            if (game.isInCombat()) {
+            if (game.isInCombat() && game.isBossBattle()) {
+                Monster monster = game.getAllMonsters();
+                if (game.isFirstBossTurn()) {
+                    game.setFirstBossTurn(false);
+                    broadcastMessage(game.printFinalBattle());
+                }
+                if (monster.getHitpoints() <= 0) {
+                    monster.setAlive(false);
+                }
+                if (!monster.getAlive()) {
+                    bossBattleEndAction(monster);
+                } else {
+                    continueBattle();
+                }
+            } else if (game.isInCombat()) {
                 Monster monster = game.getAllMonsters();
                 if (monster.getHitpoints() <= 0) {
                     monster.setAlive(false);
@@ -170,16 +188,6 @@ public class GameServer {
                 }
                 if (!monster.getAlive()) {
                     battleEndAction(monster);
-                } else {
-                    continueBattle();
-                }
-            } else if (game.isBossBattle()) {
-                Monster monster = game.getAllMonsters();
-                if (monster.getHitpoints() <= 0) {
-                    monster.setAlive(false);
-                }
-                if (!monster.getAlive()) {
-                    bossBattleEndAction(monster);
                 } else {
                     continueBattle();
                 }
@@ -249,7 +257,7 @@ public class GameServer {
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
-                    if (game.isInCombat() || game.isBossBattle()) {
+                    if (game.isInCombat()) {
                         synchronized (this) {
                             occupied = true;
                             playerTurn(user, socket, msgReceived);
