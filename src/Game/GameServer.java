@@ -132,6 +132,7 @@ public class GameServer {
 
     public static void setPlayerTurn(int playerTurn) {
         GameServer.playerTurn = playerTurn;
+        System.out.println("Initialize playerTurn = " + playerTurn);
     }
 
     private void classChoice(Socket clientSocket, BufferedReader consoleInput, String userName, String playerClass) throws IOException {
@@ -173,6 +174,8 @@ public class GameServer {
     private void monsterThread() throws IOException, InterruptedException {
         waitFor();
         while (true) {
+            playerTurn = 0;
+            System.out.println("Monster FIRST playerTurn = " + playerTurn);
             if (game.isInCombat() && game.isBossBattle()) {
                 Monster monster = game.getAllMonsters();
 
@@ -224,7 +227,9 @@ public class GameServer {
         monster = game.getAllMonsters();
         try {
             broadcastMessage(game.monsterAttack(monster));
+            System.out.println("Monster playerTurn set = " + playerTurn);
             playerTurn = 0;
+            System.out.println("Monster playerTurn set = " + playerTurn);
             this.notifyAll();
             System.out.println("monster thread goes to sleep");
             waitFor();
@@ -237,7 +242,9 @@ public class GameServer {
         String gameChaptersDirectory = "resources/chapters/";
         String gameSoundsDirectory = "resources/soundFx/";
         try {
+            System.out.println("VICTORY playerTurn = " + playerTurn);
             playerTurn = 0;
+            System.out.println("VICTORY playerTurn = " + playerTurn);
             this.notifyAll();
             System.out.println("monster died");
             System.out.println(monster.getMonsterClass().getLoot().getLootDescription());
@@ -293,7 +300,7 @@ public class GameServer {
                 if (msgReceived.startsWith("/")) {
                     if (game.isInCombat()) {
                         synchronized (this) {
-                            occupied = true;
+                            //occupied = true;
                             playerTurn(user, socket, msgReceived);
                         }
                     } else {
@@ -325,10 +332,15 @@ public class GameServer {
         playerTurn++;
         if (!game.isInCombat()) {
             occupied = false;
+            System.out.println("IF playerTurn = " + playerTurn);
             playerTurn = 0;
+            System.out.println("IF playerTurn = " + playerTurn);
         } else {
+            System.out.println("ELSE playerTurn = " + playerTurn);
+            System.out.println("ELSE playerTurn = " + playerTurn);
             if (playerTurn >= playerLimit) {
                 System.out.println("wake the monster thread");
+                System.out.println("playerTurn = " + playerTurn);
                 this.notifyAll();
             }
             //Thread.sleep(1000);
