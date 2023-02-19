@@ -136,6 +136,7 @@ public class Game {
 
     public String printChapterTwo() throws IOException {
         setCurrentRoom(2);
+        this.sound.setSoundClip(gameSoundsDirectory + "effects/Door-OpeningClosing.wav");
         if (!Sound.getDungeonSoundLoopVar().isRunning()) {
             this.sound.getDungeonSoundLoopVar().start();
         }
@@ -174,6 +175,7 @@ public class Game {
 
     public String printChapterFour() throws IOException {
         setCurrentRoom(4);
+        this.sound.setSoundClip(gameSoundsDirectory + "effects/Door-OpeningClosing.wav");
         if (!sound.getDungeonSoundLoopVar().isRunning()) {
             this.sound.getDungeonSoundLoopVar().start();
         }
@@ -210,6 +212,7 @@ public class Game {
     //THESE ARE THE METHODS TO PRINT THE BATTLE ROOMS
     public String printBattleOne() throws IOException, InterruptedException {
         setCurrentRoom(21);
+        this.sound.setSoundClip(gameSoundsDirectory + "effects/Door-OpeningClosing.wav");
         if (battleOneComplete) {
             Path screen = Path.of(gameScreensDirectory + "skull.txt");
             Path story = Path.of(gameChaptersDirectory + "Battle1_Complete.txt");
@@ -229,6 +232,7 @@ public class Game {
 
     public String printBattleTwo() throws IOException, InterruptedException {
         setCurrentRoom(22);
+        this.sound.setSoundClip(gameSoundsDirectory + "effects/Door-OpeningClosing.wav");
         if (battleTwoComplete) {
             Path screen = Path.of(gameScreensDirectory + "skull.txt");
             Path story = Path.of(gameChaptersDirectory + "Battle2_Complete.txt");
@@ -249,6 +253,7 @@ public class Game {
 
     public String printBattleThree() throws IOException, InterruptedException {
         setCurrentRoom(23);
+        this.sound.setSoundClip(gameSoundsDirectory + "effects/Door-OpeningClosing.wav");
         if (battleThreeComplete) {
             this.sound.getDungeonSoundLoopVar().start();
             Path screen = Path.of(gameScreensDirectory + "skull.txt");
@@ -282,6 +287,7 @@ public class Game {
     //THESE ARE THE METHODS TO PRINT THE SHOP AND CHEST ROOMS
     public String printShop() throws IOException {
         setCurrentRoom(10);
+        this.sound.setSoundClip(gameSoundsDirectory + "effects/Door-OpeningClosing.wav");
         this.sound.getDungeonSoundLoopVar().stop();
         sound.setSoundLoop(gameSoundsDirectory + "Shop-Theme.wav");
         System.out.println("Party is on room(shop): " + getCurrentRoom());
@@ -321,6 +327,7 @@ public class Game {
 
     public String printChestOne() throws IOException { //TODO PRINT EMPTY CHEST ART and in some instances you can go /back
         setCurrentRoom(31);
+        this.sound.setSoundClip(gameSoundsDirectory + "effects/Door-OpeningClosing.wav");
         if (chestOneOpened) {
             Path screen = Path.of(gameScreensDirectory + "emptyChest.txt");
             return Files.readString(screen) + "\n" + Messages.CHEST_ALREADY_OPENED;
@@ -337,6 +344,7 @@ public class Game {
 
     public String printChestTwo() throws IOException {
         setCurrentRoom(32);
+        this.sound.setSoundClip(gameSoundsDirectory + "effects/Door-OpeningClosing.wav");
         if (chestTwoOpened) {
             return Messages.CHEST_ALREADY_OPENED;
         }
