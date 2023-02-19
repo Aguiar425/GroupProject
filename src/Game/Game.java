@@ -254,7 +254,7 @@ public class Game {
     }
 
     public String printFinalBattle() throws IOException {
-        setCurrentRoom(24); //TODO KEY VALIDATION AND FINAL BOSS MUSIC
+        setCurrentRoom(24);
         sound.getSoundLoopVar().stop();
         sound.setSoundLoop(gameSoundsDirectory + "FinalBoss-Theme.wav");
         inCombat = true;
@@ -355,7 +355,7 @@ public class Game {
 
         Path screen = Path.of(gameScreensDirectory + "badEnding.txt");
         Path story = Path.of(gameChaptersDirectory + "BadEndingChapterOne.txt");
-        return Files.readString(screen) + "\n" + Files.readString(story); //TODO DON'T FORGET THE BAD ENDING
+        return Files.readString(screen) + "\n" + Files.readString(story);
     }
 
     public String printBadChoicesTwo() throws IOException {
@@ -378,7 +378,6 @@ public class Game {
     }
 
     public String printDefeat() throws IOException {
-        //TODO DON'T FORGET THE GAME OVER (DARKSOULS)
         sound.getDungeonSoundLoopVar().stop();
         sound.setSoundClip(gameSoundsDirectory + "effects/GameOver-Theme.wav");
         Path screen = Path.of(gameScreensDirectory + "gameOver.txt");
