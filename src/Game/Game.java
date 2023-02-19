@@ -271,7 +271,7 @@ public class Game {
         chestOneOpened = true;
         System.out.println("party is on chest room" + getCurrentRoom());
         this.sound.getDungeonSoundLoopVar().stop();
-        sound.setSoundClip(gameSoundsDirectory + "Chest-Theme.wav");
+        sound.setSoundClip(gameSoundsDirectory + "effects/Chest-Theme.wav");
         Path screen = Path.of(gameScreensDirectory + "chest.txt");
         Path story = Path.of(gameChaptersDirectory + "ChestOne.txt");
         gold += 150;
@@ -287,7 +287,7 @@ public class Game {
         this.sound.getSoundLoopVar().stop();
         System.out.println("party is on chest room" + getCurrentRoom());
 
-        sound.setSoundClip(gameSoundsDirectory + "Chest-Theme.wav");
+        sound.setSoundClip(gameSoundsDirectory + "effects/Chest-Theme.wav");
         Path screen = Path.of(gameScreensDirectory + "chest.txt");
         Path story = Path.of(gameChaptersDirectory + "ChestTwo.txt");
 
