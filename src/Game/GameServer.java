@@ -13,8 +13,6 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -69,16 +67,17 @@ public class GameServer {
                     System.out.println(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     System.out.println(Messages.GAME_STARTED);
 
-                    printMainMenu(); //TODO new game selection SERIALIZABLE
+                    game.printMainMenu(this); //TODO new game selection SERIALIZABLE
+                    Thread.sleep(5000);
                     broadcastMessage(game.startGame());
-                    choicesSetup("resources/chapters/choices/chapterOneChoices.txt");
+                    //choicesSetup("resources/chapters/choices/chapterZeroChoices.txt");
                     createPlayerThread(threadFactory, clientSocket, userName);
                     createMonsterThread(threadFactory);
                 } else {
                     System.out.println(Messages.PLAYER_LIMIT);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -148,15 +147,6 @@ public class GameServer {
 
     private void choicesSetup(String path) {
         playerChoices = PlayerChoices.playerChoices(path);
-    }
-
-    private void printMainMenu() throws IOException {
-        Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
-        String content = Files.readString(filePath);
-        broadcastMessage(content);
-        //broadcastMessage(Colors.RED + "       <N>"+ Colors.RESET+"ew Game.Game                 " + Colors.RED + "<L>"+ Colors.RESET + "oad Game.Game");
-        //broadcastMessage(game.startGame());
-        //BufferedReader input = new BufferedReader(new InputStreamReader(socket.GetInputStream()));
     }
 
     //THESE METHODS ARE RELATED TO THE MONSTER THREAD

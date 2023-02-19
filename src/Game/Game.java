@@ -97,13 +97,19 @@ public class Game {
             }
         }
         populateMonsters(); //TODO CHANGE TO CHAPTER 0
-        return printChapterOne();
+        return printChapterZero();
     }
 
     //THERE ARE THE METHODS FOR PRINTING THE DIFFERENT ROOMS
     public String printChapterZero() throws IOException { //TODO IMPLEMENT CHAPTER ZERO AND ADD DELAY BETWEEN SCREENS. MAYBE WAIT FOR ANY INPUT?
-        Path filePath = Path.of(gameChaptersDirectory + "Chapter0.txt");
-        return Files.readString(filePath);
+        setCurrentRoom(0);
+        System.out.println("Party is in room: " + getCurrentRoom());
+
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterZeroChoices.txt"));
+
+        Path story = Path.of(gameChaptersDirectory + "Chapter0.txt");
+        Path screen = Path.of(gameScreensDirectory + "castle.txt");
+        return Files.readString(screen) + "\n" + Files.readString(story) ;
     }
 
     public String printChapterOne() throws IOException {
@@ -457,6 +463,14 @@ public class Game {
     public void startAndStopLoops() {
         this.sound.getSoundLoopVar().stop();
         this.sound.getDungeonSoundLoopVar().stop();
+    }
+
+    void printMainMenu(GameServer gameServer) throws IOException {
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "chapterZeroChoices.txt"));
+
+        Path filePath = Path.of("resources/ascii/Game_Screens/mainMenu.txt");
+        String content = Files.readString(filePath);
+        gameServer.broadcastMessage(content);
     }
 }
 
