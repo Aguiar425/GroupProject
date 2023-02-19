@@ -168,34 +168,38 @@ public class GameServer {
     private void monsterThread() throws IOException, InterruptedException {
         waitFor();
         while (true) {
-            if (game.isInCombat() && game.isBossBattle()) {
+            System.out.println("MonsterReady");
+            if (game.isInCombat()) {
                 Monster monster = game.getAllMonsters();
                 if (game.isFirstBossTurn()) {
+                    System.out.println("firstTurnBoss check");
                     game.setFirstBossTurn(false);
                     broadcastMessage(game.printFinalBattle());
                     Thread.sleep(100);
                 }
                 if (monster.getHitpoints() <= 0) {
-                    monster.setAlive(false);
-                    checkBattleCompletion(monster);
-                }
-                if (!monster.getAlive()) {
-                    battleEndAction(monster);
-                } else {
-                    continueBattle();
-                }
-            } else if (game.isInCombat()) {
-                Monster monster = game.getAllMonsters();
-                if (monster.getHitpoints() <= 0) {
+                    System.out.println("monster dead check");
                     monster.setAlive(false);
                     checkBattleCompletion(monster);
 
                 }
                 if (!monster.getAlive()) {
+                    System.out.println("end battle");
                     battleEndAction(monster);
 
                 } else {
-                    continueBattle();
+                    System.out.println("continue battle");
+                    //        Monster monster;
+                    //        monster = game.getAllMonsters();
+                    try {
+                        playerTurn = 0;
+                        broadcastMessage(game.monsterAttack(monster));
+                        this.notifyAll();
+                        System.out.println("monster thread goes to sleep");
+                        waitFor();
+                    } catch (InterruptedException | IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             } else {
                 System.out.println("monster thread goes to sleep" + Colors.RED + "NOT A BATTLE" + Colors.RESET);
@@ -204,18 +208,8 @@ public class GameServer {
         }
     }
 
-    private void continueBattle() {
-        Monster monster;
-        monster = game.getAllMonsters();
-        try {
-            broadcastMessage(game.monsterAttack(monster));
-            playerTurn = 0;
-            this.notifyAll();
-            System.out.println("monster thread goes to sleep");
-            waitFor();
-        } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
-        }
+    private void continueBattle(Monster monster) {
+
     }
 
     private void battleEndAction(Monster monster) {
@@ -247,7 +241,7 @@ public class GameServer {
     private void broadcastEpilogue(String gameChaptersDirectory, String gameSoundsDirectory) throws InterruptedException, IOException {
         game.sound.getSoundLoopVar().stop();
         game.sound.setSoundLoop(gameSoundsDirectory + "Ending-Theme.wav");
-        Thread.sleep(5000);
+        Thread.sleep(5000); //TODO change timer to coincide with death sound
         broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterOne.txt")));
         Thread.sleep(5000);
         broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterTwo.txt")));
@@ -276,21 +270,21 @@ public class GameServer {
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
-                    if (game.isInCombat() || game.isBossBattle()) {
+                    if (game.isInCombat()) {
                         synchronized (this) {
-                            //occupied = true;
+                            occupied = true;
                             playerTurn(user, socket, msgReceived);
                         }
                     } else {
                         occupied = true;
                         dealWithCommand(msgReceived, socket, user);
                     }
-                    Thread.sleep(3000);
+                    Thread.sleep(100);
                     occupied = false;
                 } else if (msgReceived.startsWith("@")) {
                     occupied = true;
                     dealWithChoice(msgReceived);
-                    Thread.sleep(3000);
+                    Thread.sleep(1000);
                     occupied = false;
                 } else {
                     broadcastMessage(user + ": " + msgReceived);

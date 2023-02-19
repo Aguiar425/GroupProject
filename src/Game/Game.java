@@ -424,15 +424,22 @@ public class Game {
     }
 
     public String monsterAttack(Monster monster) throws InterruptedException {
-        int targetIndex = RandomNumber.randomizer(0, GameServer.getPlayerLimit());
+        System.out.println("monster attack");
+        int targetIndex = RandomNumber.randomizer(0, (GameServer.getPlayerLimit() - 1));
+        System.out.println("monster attack 2 " + targetIndex);
         PlayerCharacter target = party.get(targetIndex);
+        System.out.println("monster attack 3");
         int damage = RandomNumber.randomizer(monster.getMinDamage(), monster.getMaxDamage());
+        System.out.println("monster attack 4");
         if (target.isDefending()) {
+            System.out.println("monster attack 5 insinde defense");
             damage = (int) (damage / 2);
             target.setDefending(false);
         }
+        System.out.println("monster attack 6");
         target.setHitpoints(target.getHitpoints() - damage);
         System.out.println(target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!");
+
         return target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!";
     }
 

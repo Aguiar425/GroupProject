@@ -58,6 +58,9 @@ public class BackCommand implements CommandHandler {
                 server.broadcastMessage(game.printChapterThree());
             } else if (game.getCurrentRoom() == 32) {
                 server.broadcastMessage(game.printBattleThree());
+            } else if (game.getCurrentRoom() == 41) {
+                game.startAndStopLoops();
+                server.broadcastMessage(game.printChapterFour());
             } else if (game.getCurrentRoom() == 51) {
                 server.broadcastMessage(game.printChapterThree());
             } else if (game.getCurrentRoom() == 52) {
