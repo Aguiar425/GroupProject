@@ -218,9 +218,7 @@ public class GameServer {
         }
     }
 
-    private void bossBehaviour(Monster monster) throws IOException {
-
-    }
+  v
 
     private void continueBattle() {
         Monster monster;
