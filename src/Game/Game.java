@@ -25,6 +25,7 @@ public class Game {
     private static int keyCounter;
     private static Boolean chestOneOpened;
     private static Boolean chestTwoOpened;
+    private static Boolean partyHasRogue;
     private final String gameScreensDirectory = "resources/ascii/game_Screens/";
     private final String gameChaptersDirectory = "resources/chapters/";
     private final String gameChoicesDirectory = "resources/chapters/choices/";
@@ -34,7 +35,6 @@ public class Game {
     ExecutorService threadFactory;
     Sound sound;
     private List<PlayerCharacter> party;
-    private static Boolean partyHasRogue;
 
     public Game() {
         this.threadFactory = Executors.newCachedThreadPool();
@@ -69,6 +69,14 @@ public class Game {
         Game.battleThreeComplete = battleThreeComplete;
     }
 
+    public static Boolean getPartyHasRogue() {
+        return partyHasRogue;
+    }
+
+    public static void setPartyHasRogue(Boolean partyHasRogue) {
+        Game.partyHasRogue = partyHasRogue;
+    }
+
     public void createCharacter(String name, CharacterClasses classChoice) {
         PlayerCharacter pc = new PlayerCharacter(classChoice, name);
         party.add(pc);
@@ -83,8 +91,8 @@ public class Game {
 
     public String startGame() throws IOException {
 
-        for (PlayerCharacter pc: party) {
-            if(pc.getCharacterClass().equals(CharacterClasses.ROGUE)){
+        for (PlayerCharacter pc : party) {
+            if (pc.getCharacterClass().equals(CharacterClasses.ROGUE)) {
                 setPartyHasRogue(true);
             }
         }
@@ -137,19 +145,19 @@ public class Game {
         return Files.readString(screen) + "\n" + Files.readString(story);
     }
 
-    public String printChapterFour() throws IOException {
-        if(shopHasKey && !partyHasRogue){
+    public String chapterFourAccessCondition() throws IOException {
+        if (shopHasKey && !partyHasRogue) {
             setCurrentRoom(51);
             Path story = Path.of(gameChaptersDirectory + "Chapter3_DoorLocked.txt");
             return Files.readString(story);
         } else if (shopHasKey && partyHasRogue) {
-            return Messages.LOCKED_DOOR_ROGUE+"\n" + accessChapterFour();
+            return Messages.LOCKED_DOOR_ROGUE + "\n" + printChapterFour();
         } else {
-            return accessChapterFour();
+            return printChapterFour();
         }
     }
 
-    private String accessChapterFour() throws IOException {
+    public String printChapterFour() throws IOException {
         setCurrentRoom(4);
         if (!sound.getDungeonSoundLoopVar().isRunning()) {
             this.sound.getDungeonSoundLoopVar().start();
@@ -160,6 +168,16 @@ public class Game {
         Path screen = Path.of(gameScreensDirectory + "threeDoors.txt");
         Path story = Path.of(gameChaptersDirectory + "Chapter4.txt");
         return Files.readString(screen) + "\n" + Files.readString(story);
+    }
+
+    public String chapterFiveAccessCondition() throws IOException {
+        if (this.getKeyCounter() < 3) {
+            setCurrentRoom(52);
+            Path story = Path.of(gameChaptersDirectory + "Chapter4_FinalDoor.txt");
+            return Files.readString(story);
+        } else {
+            return printChapterFinal();
+        }
     }
 
     public String printChapterFinal() throws IOException {
@@ -360,9 +378,10 @@ public class Game {
                 "\nGo back to continue your adventure.";
     }
 
-
     public String printDefeat() throws IOException {
         //TODO DON'T FORGET THE GAME OVER (DARKSOULS)
+        sound.getSoundLoopVar().stop();
+        sound.setSoundClip(gameSoundsDirectory + "GameOver-Theme.wav");
         Path screen = Path.of(gameScreensDirectory + "gameOver.txt");
         return Files.readString(screen);
     }
@@ -435,14 +454,6 @@ public class Game {
 
     public void setKeyCounter(int keyCounter) {
         this.keyCounter = keyCounter;
-    }
-
-    public static Boolean getPartyHasRogue() {
-        return partyHasRogue;
-    }
-
-    public static void setPartyHasRogue(Boolean partyHasRogue) {
-        Game.partyHasRogue = partyHasRogue;
     }
 
     public void startAndStopLoops() {

@@ -22,8 +22,10 @@ public class BackCommand implements CommandHandler {
                 server.broadcastMessage(game.printChapterThree());
                 game.setCurrentRoom(3);
             } else if (game.getCurrentRoom() == 5) {
+                game.startAndStopLoops();
+
                 System.out.println("Party left room: " + game.getCurrentRoom());
-                server.broadcastMessage(game.printChapterFour());
+                server.broadcastMessage(game.chapterFourAccessCondition());
                 game.setCurrentRoom(4);
             } else if (game.getCurrentRoom() == 10) {
                 game.startAndStopLoops();
@@ -47,7 +49,7 @@ public class BackCommand implements CommandHandler {
                 game.startAndStopLoops();
 
                 System.out.println("Party left room: " + game.getCurrentRoom());
-                server.broadcastMessage(game.printChapterFour());
+                server.broadcastMessage(game.chapterFourAccessCondition());
                 game.setCurrentRoom(4);
             } else if (game.getCurrentRoom() == 24) {
                 server.broadcastMessage(Messages.RUN_LAST_BATTLE);
@@ -58,6 +60,8 @@ public class BackCommand implements CommandHandler {
                 server.broadcastMessage(game.printBattleThree());
             } else if (game.getCurrentRoom() == 51) {
                 server.broadcastMessage(game.printChapterThree());
+            } else if (game.getCurrentRoom() == 52) {
+                server.broadcastMessage(game.printChapterFour());
             } else {
                 System.out.println("Party tried to leave room: " + game.getCurrentRoom() + " KEK");
                 server.broadcastMessage(Colors.RED + "You can't go back, there is no escape".toUpperCase() + Colors.RESET);
