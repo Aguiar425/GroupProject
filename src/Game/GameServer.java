@@ -28,6 +28,11 @@ public class GameServer {
     private static int playerTurn = 0;
     private static Game game;
     private static boolean occupied = false;
+    private static boolean specialOne = true;
+    private static boolean specialTwo = true;
+    private static boolean specialThree = true;
+    private static boolean specialFour = true;
+    private static boolean specialFive = true;
 
     public GameServer() {
         game = new Game();
@@ -70,7 +75,7 @@ public class GameServer {
                     System.out.println(Messages.GAME_STARTED);
 
                     game.printMainMenu(this); //TODO new game selection SERIALIZABLE
-                    Thread.sleep(5000);
+                    Thread.sleep(1000); //TODO NOT FINAL
                     broadcastMessage(game.startGame());
                     //choicesSetup("resources/chapters/choices/chapterZeroChoices.txt");
                     createPlayerThread(threadFactory, clientSocket, userName);
@@ -170,10 +175,11 @@ public class GameServer {
         while (true) {
             if (game.isInCombat() && game.isBossBattle()) {
                 Monster monster = game.getAllMonsters();
+
                 if (game.isFirstBossTurn()) {
                     game.setFirstBossTurn(false);
                     broadcastMessage(game.printFinalBattle());
-                    Thread.sleep(1000);
+                    //Thread.sleep(100);
                 }
                 if (monster.getHitpoints() <= 0) {
                     monster.setAlive(false);
@@ -182,6 +188,11 @@ public class GameServer {
                 if (!monster.getAlive()) {
                     battleEndAction(monster);
                 } else {
+                    System.out.println("specialOne = " + specialOne);
+                    System.out.println("specialTwo = " + specialTwo);
+                    System.out.println("specialThree = " + specialThree);
+                    System.out.println("specialFour = " + specialFour);
+                    System.out.println("specialFive = " + specialFive);
                     continueBattle();
                 }
             } else if (game.isInCombat()) {
@@ -202,6 +213,10 @@ public class GameServer {
                 waitFor();
             }
         }
+    }
+
+    private void bossBehaviour(Monster monster) throws IOException {
+
     }
 
     private void continueBattle() {
@@ -276,7 +291,7 @@ public class GameServer {
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
-                    if (game.isInCombat() || game.isBossBattle()) {
+                    if (game.isInCombat()) {
                         synchronized (this) {
                             occupied = true;
                             playerTurn(user, socket, msgReceived);
@@ -316,7 +331,7 @@ public class GameServer {
                 System.out.println("wake the monster thread");
                 this.notifyAll();
             }
-            Thread.sleep(1000);
+            //Thread.sleep(1000);
             occupied = false;
             this.wait();
         }
