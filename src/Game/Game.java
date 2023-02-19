@@ -313,7 +313,8 @@ public class Game {
     public String printChestOne() throws IOException { //TODO PRINT EMPTY CHEST ART and in some instances you can go /back
         setCurrentRoom(31);
         if (chestOneOpened) {
-            return Messages.CHEST_ALREADY_OPENED;
+            Path screen = Path.of(gameScreensDirectory + "emptyChest.txt");
+            return Files.readString(screen) +"\n"+Messages.CHEST_ALREADY_OPENED;
         }
         chestOneOpened = true;
         System.out.println("party is on chest room" + getCurrentRoom());
