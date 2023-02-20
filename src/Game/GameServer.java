@@ -196,23 +196,27 @@ public class GameServer {
 
                 } else {
                     bossBehaviour(monster);
-                    System.out.println("continue battle");
-                    //        Monster monster;
-                    //        monster = game.getAllMonsters();
-                    try {
-                        playerTurn = 0;
-                        broadcastMessage(game.monsterAttack(monster));
-                        this.notifyAll();
-                        System.out.println("monster thread goes to sleep");
-                        waitFor();
-                    } catch (InterruptedException | IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    continueBattle(monster);
                 }
             } else {
                 System.out.println("monster thread goes to sleep" + Colors.RED + "NOT A BATTLE" + Colors.RESET);
                 waitFor();
             }
+        }
+    }
+
+    private void continueBattle(Monster monster) {
+        System.out.println("continue battle");
+        //        Monster monster;
+        //        monster = game.getAllMonsters();
+        try {
+            playerTurn = 0;
+            broadcastMessage(game.monsterAttack(monster));
+            this.notifyAll();
+            System.out.println("monster thread goes to sleep");
+            waitFor();
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
