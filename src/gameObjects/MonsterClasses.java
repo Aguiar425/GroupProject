@@ -2,9 +2,9 @@ package gameObjects;
 
 public enum MonsterClasses {
 
-    BUG(10, 15, 30, LootTable.BATTLE_ONE),
-    ELF(10, 5, 10, LootTable.BATTLE_TWO),
-    GRIFFIN(10, 7, 13, LootTable.BATTLE_THREE),
+    BUG(50, 3, 7, LootTable.BATTLE_ONE),
+    ELF(75, 5, 10, LootTable.BATTLE_TWO),
+    GRIFFIN(100, 7, 13, LootTable.BATTLE_THREE),
     FINAL(300, 10, 15, LootTable.BATTLE_FINAL);
 
     private int hitpoints;

@@ -45,9 +45,9 @@ public class GameServer {
 
         try {
             serverSocket = new ServerSocket(8080);
+            ExecutorService threadFactory = Executors.newCachedThreadPool();
 
             while (true) {
-                ExecutorService threadFactory = Executors.newCachedThreadPool();
                 final Socket clientSocket = serverSocket.accept();
 
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
