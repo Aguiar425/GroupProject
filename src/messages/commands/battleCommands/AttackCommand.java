@@ -17,7 +17,7 @@ public class AttackCommand implements BattleHandler {
 
         game.getAllMonsters().setHitpoints(game.getAllMonsters().getHitpoints() - damage);
         System.out.println(character.getName().concat(" dealt ") + Colors.BLUE + damage + Colors.RESET + " of damage!");
-        server.broadcastMessage(character.getName().concat(" dealt ") + Colors.BLUE + damage + Colors.RESET + " of damage!");
+        server.broadcastMessage(character.getName().concat(" dealt ") + Colors.BLUE + damage + "/???" + Colors.RESET + " of damage!");
         System.out.println(game.getAllMonsters() + " has " + game.getAllMonsters().getHitpoints() + " hitpoints");
     }
 }

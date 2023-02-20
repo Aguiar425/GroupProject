@@ -22,9 +22,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class GameServer {
+    public static int playerLimit;
+    public static int deadPlayers = 0;
     private static HashMap<String, Socket> clientMap = new HashMap<>();
     private static HashMap<String, String> playerChoices = new HashMap<>();
-    private static int playerLimit;
     private static int playerTurn = 0;
     private static Game game;
     private static boolean occupied = false;
@@ -33,6 +34,7 @@ public class GameServer {
     private static boolean specialThree = true;
     private static boolean specialFour = true;
     private static boolean specialFive = true;
+
 
     public GameServer() {
         game = new Game();
@@ -217,36 +219,32 @@ public class GameServer {
     private void bossBehaviour(Monster monster) throws IOException {
         if (game.isBossBattle() && specialFive && monster.getHitpoints() <= 50) {
             specialFive = false;
-            broadcastMessage("GIT DRAGON: " + Colors.RED + "HAHAHAHAHAHAHHAH" + Colors.RESET);
-            broadcastMessage("YOU LEAVE ME NO CHOICE");
-            broadcastMessage("you think you can program...");
-            broadcastMessage("but...");
-            broadcastMessage("CAN");
-            broadcastMessage("YOU");
-            broadcastMessage(Colors.RED + "GIT?????" + Colors.RESET);
-            broadcastMessage(Colors.YELLOW + "GIT FUCKED" + Colors.RESET);
+            broadcastMessage("                                                          GIT DRAGON: " + Colors.RED + "HAHAHAHAHAHAHHAH" + Colors.RESET);
+            broadcastMessage("                                                                          YOU LEAVE ME NO CHOICE");
+            broadcastMessage("                                                                        you think you can program...");
+            broadcastMessage("                                                                                     but...");
+            broadcastMessage("                                                                                      CAN");
+            broadcastMessage("                                                                                      YOU");
+            broadcastMessage(Colors.RED + "                                                                       GIT?????" + Colors.RESET);
+            broadcastMessage(Colors.YELLOW + "                                                                   GIT FUCKED" + Colors.RESET);
         } else if (game.isBossBattle() && specialFour && monster.getHitpoints() <= 100) {
             specialFour = false;
-            broadcastMessage("GIT DRAGON: " + Colors.RED + "YOU..." + Colors.RESET);
-            broadcastMessage("the audacity you possess...");
-            broadcastMessage("you really think you can best " + Colors.RED + "ME?" + Colors.RESET);
+            broadcastMessage("                                                                                  GIT DRAGON: " + Colors.RED + "YOU..." + Colors.RESET);
+            broadcastMessage("                                                                                 the audacity you possess...");
+            broadcastMessage("                                                                          you really think you can best " + Colors.RED + "ME?" + Colors.RESET);
         } else if (game.isBossBattle() && specialThree && monster.getHitpoints() <= 150) {
             specialThree = false;
-            broadcastMessage("GIT DRAGON: " + Colors.RED + "UGHHHHHH" + Colors.RESET);
-            broadcastMessage("how dare you...");
+            broadcastMessage("                                                                                  GIT DRAGON: " + Colors.RED + "UGHHHHHH" + Colors.RESET);
+            broadcastMessage("                                                                                     how dare you...");
         } else if (game.isBossBattle() && specialTwo && monster.getHitpoints() <= 200) {
             specialTwo = false;
-            broadcastMessage("GIT DRAGON: " + Colors.RED + "HAHAHA" + Colors.RESET);
-            broadcastMessage("come at me young devs, show me what you got");
+            broadcastMessage("                                                                                  GIT DRAGON: " + Colors.RED + "HAHAHA" + Colors.RESET);
+            broadcastMessage("                                                                       come at me young devs, show me what you got");
         } else if (game.isBossBattle() && specialOne && monster.getHitpoints() <= 250) {
             specialOne = false;
-            broadcastMessage("GIT DRAGON: HA HA HA HA");
-            broadcastMessage("you guys are quite humorous");
+            broadcastMessage("                                                                                  GIT DRAGON: HA HA HA HA");
+            broadcastMessage("                                                                                 you guys are quite humorous");
         }
-
-    }
-
-    private void continueBattle(Monster monster) {
 
     }
 
@@ -304,14 +302,30 @@ public class GameServer {
         System.out.println(Colors.RED + clientMap + Colors.RESET);
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String msgReceived;
-
+        PlayerCharacter thisPlayerCharacter = null;
+        for (PlayerCharacter pc : game.getParty()) {
+            if (pc.getName().equals(user)) {
+                thisPlayerCharacter = pc;
+            }
+        }
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
                     if (game.isInCombat()) {
                         synchronized (this) {
-                            occupied = true;
-                            playerTurn(user, socket, msgReceived);
+                            if (thisPlayerCharacter.getHitpoints() <= 0) {
+                                writeAndSend(socket, "you are kinda dead, what do you expect you can do?");
+                                playerTurn++;
+                                if (playerTurn >= playerLimit) {
+                                    System.out.println("wake the monster thread");
+                                    this.notifyAll();
+                                }
+                                occupied = false;
+                                this.wait();
+                            } else {
+                                occupied = true;
+                                playerTurn(user, socket, msgReceived);
+                            }
                         }
                     } else {
                         occupied = true;

@@ -55,7 +55,7 @@ public class Game {
         this.healingPotions = 0;
         //this.battleFinalComplete = false;
         this.shopHasKey = true;
-        this.keyCounter = 0; //TODO NOT FINAL
+        this.keyCounter = 0;
         this.chestOneOpened = false;
         this.chestTwoOpened = false;
         this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
@@ -411,6 +411,12 @@ public class Game {
         sound.getSoundLoopVar().stop();
         sound.setSoundLoop(gameSoundsDirectory + "Victory-Theme.wav");
         inCombat = false;
+        GameServer.deadPlayers = 0;
+        for (PlayerCharacter pc : getParty()) {
+            if (pc.getHitpoints() == 0) {
+                pc.setHitpoints(1);
+            }
+        }
         Path screen = Path.of(gameScreensDirectory + "victory.txt");
         return Files.readString(screen) + "\n The party obtained " + lootMessage +
                 "\nGo back to continue your adventure.";
@@ -423,24 +429,30 @@ public class Game {
         return Files.readString(screen);
     }
 
-    public String monsterAttack(Monster monster) throws InterruptedException {
-        System.out.println("monster attack");
+    public String monsterAttack(Monster monster) throws InterruptedException, IOException {
         int targetIndex = RandomNumber.randomizer(0, (GameServer.getPlayerLimit() - 1));
-        System.out.println("monster attack 2 " + targetIndex);
         PlayerCharacter target = party.get(targetIndex);
-        System.out.println("monster attack 3");
+
+        while (target.getHitpoints() <= 0) {
+            targetIndex = RandomNumber.randomizer(0, (GameServer.getPlayerLimit() - 1));
+            target = party.get(targetIndex);
+            if (GameServer.deadPlayers == GameServer.playerLimit) {
+                return printDefeat();
+            }
+        }
+
         int damage = RandomNumber.randomizer(monster.getMinDamage(), monster.getMaxDamage());
-        System.out.println("monster attack 4");
         if (target.isDefending()) {
-            System.out.println("monster attack 5 insinde defense");
             damage = (int) (damage / 2);
             target.setDefending(false);
         }
-        System.out.println("monster attack 6");
         target.setHitpoints(target.getHitpoints() - damage);
+        if (target.getHitpoints() <= 0) {
+            GameServer.deadPlayers += 1;
+        }
         System.out.println(target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!");
 
-        return target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!";
+        return target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage! " + Colors.BLUE + target.getHitpoints() + "/" + target.getMaxHitpoints() + Colors.RESET + " remaining.";
     }
 
     public Monster getAllMonsters() {
