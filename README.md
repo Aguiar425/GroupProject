@@ -28,7 +28,7 @@ During character creation, you may choose between three different classes.
 - R -> Rogue: A nimble fighter that has a lower attack power than a Warrior or a Mage, but has the ability to unlock certain doors even if you don't
               possess the key for it.
 - W -> Warrior: A bulky fighter that boasts higher hitpoints than any other class.
-- M -> Mage: A frail arcane caster. What he lacks in hitpoints, they make up for in steady, high damage.
+- M -> Mage: A frail arcane caster. What they lacks in hitpoints, they make up for in steady, high damage.
 
 #### Battle
 
