@@ -12,7 +12,7 @@ public class HelpCommand implements CommandHandler {
 
         server.writeAndSend(socket, "These are the available commands");
         server.writeAndSend(socket, "/help  -> Lists all commands");
-        server.writeAndSend(socket, "/save  -> Saves the game");
+        //server.writeAndSend(socket, "/save  -> Saves the game");
         server.writeAndSend(socket, "/exit  -> Leaves the game");
         server.writeAndSend(socket, "/back  -> Returns the party to the previous screen");
         server.writeAndSend(socket, "/list  -> Lists all players in the game");
