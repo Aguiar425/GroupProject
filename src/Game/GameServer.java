@@ -77,7 +77,7 @@ public class GameServer {
                     System.out.println(Messages.GAME_STARTED);
 
                     game.printMainMenu(this); //TODO new game selection SERIALIZABLE
-                    Thread.sleep(1000); //TODO NOT FINAL
+                    Thread.sleep(5000);
                     broadcastMessage(game.startGame());
                     //choicesSetup("resources/chapters/choices/chapterZeroChoices.txt");
                     createPlayerThread(threadFactory, clientSocket, userName);
@@ -293,7 +293,7 @@ public class GameServer {
     private void broadcastEpilogue(String gameChaptersDirectory, String gameSoundsDirectory) throws InterruptedException, IOException {
         game.sound.getSoundLoopVar().stop();
         game.sound.setSoundLoop(gameSoundsDirectory + "Ending-Theme.wav");
-        Thread.sleep(5000); //TODO change timer to coincide with death sound
+        Thread.sleep(25000); //TODO change timer to coincide with death sound
         broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterOne.txt")));
         Thread.sleep(5000);
         broadcastMessage(Files.readString(Path.of(gameChaptersDirectory + "EndingChapterTwo.txt")));
@@ -327,6 +327,10 @@ public class GameServer {
         while ((msgReceived = inputReader.readLine()) != null) {
             if (!occupied) {
                 if (msgReceived.startsWith("/")) {
+                    if (msgReceived.compareTo("/exit") == 0) {
+                        playerLimit--;
+                        break;
+                    }
                     if (game.isInCombat()) {
                         synchronized (this) {
                             if (thisPlayerCharacter.getHitpoints() <= 0) {
@@ -344,6 +348,10 @@ public class GameServer {
                             }
                         }
                     } else {
+                        if (msgReceived.compareTo("/exit") == 0) {
+                            playerLimit--;
+                            break;
+                        }
                         occupied = true;
                         dealWithCommand(msgReceived, socket, user);
                     }

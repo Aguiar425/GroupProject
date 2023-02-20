@@ -4,7 +4,6 @@ public enum Commands {
 
     HELP("/help", new HelpCommand()),  //Lists all commands
     SAVE("/save", new SaveCommand()),
-    EXIT("/exit", new ExitCommand()),
     BACK("/back", new BackCommand()),  //This command returns the party to the previous screen
     LIST("/list", new ListCommand()),  //Lists all players
     INVENTORY("/inv", new InventoryCommand()),

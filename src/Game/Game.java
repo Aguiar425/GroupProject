@@ -340,7 +340,7 @@ public class Game {
         }
     }
 
-    public String printChestOne() throws IOException { //TODO PRINT EMPTY CHEST ART and in some instances you can go /back
+    public String printChestOne() throws IOException {
         setCurrentRoom(31);
         this.sound.setSoundClip(gameSoundsDirectory + "effects/Door-OpeningClosing.wav");
         if (chestOneOpened) {
@@ -382,7 +382,7 @@ public class Game {
 
     //THESE ARE GENERAL METHODS
     public String printGoodEnding(String lootMessage) throws IOException {
-        inCombat = false; //TODO DON'T FORGET THE GOOD ENDING
+        inCombat = false;
         Path screen = Path.of(gameScreensDirectory + "victory.txt");
         return Files.readString(screen) + "\n The party obtained " + lootMessage +
                 "\nGo back to continue your adventure.";
