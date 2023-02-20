@@ -19,6 +19,12 @@ public class RunCommand implements BattleHandler {
                 server.broadcastMessage(Messages.RUN_SUCCESS);
                 server.notifyAll();
                 GameServer.setPlayerTurn(0);
+                GameServer.setDeadPlayers(0);
+                for (PlayerCharacter pc : game.getParty()) {
+                    if (pc.getHitpoints() == 0) {
+                        pc.setHitpoints(1);
+                    }
+                }
                 break;
             case 2:
                 server.broadcastMessage(Messages.RUN_FAIL);

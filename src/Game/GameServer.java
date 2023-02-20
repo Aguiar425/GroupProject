@@ -22,8 +22,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class GameServer {
-    public static int playerLimit;
-    public static int deadPlayers = 0;
+    private static int playerLimit;
+    private static int deadPlayers = 0;
     private static HashMap<String, Socket> clientMap = new HashMap<>();
     private static HashMap<String, String> playerChoices = new HashMap<>();
     private static int playerTurn = 0;
@@ -63,13 +63,13 @@ public class GameServer {
 
                 totalPlayers++;
 
-                if (totalPlayers < playerLimit) {
+                if (totalPlayers < getPlayerLimit()) {
                     broadcastMessage(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
 
                     System.out.println(Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
 
                     createPlayerThread(threadFactory, clientSocket, userName);
-                } else if (totalPlayers == playerLimit) {
+                } else if (totalPlayers == getPlayerLimit()) {
                     broadcastMessage(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     broadcastMessage(Colors.BLUE + Messages.GAME_STARTED + Colors.RESET);
 
@@ -97,8 +97,8 @@ public class GameServer {
         System.out.println("How many players?");
         while (true) {
             try {
-                playerLimit = Integer.parseInt(scanner.nextLine());
-                System.out.println("Max player set to: " + playerLimit);
+                setPlayerLimit(Integer.parseInt(scanner.nextLine()));
+                System.out.println("Max player set to: " + getPlayerLimit());
                 break;
             } catch (NumberFormatException nfe) {
                 System.out.println("Please insert a valid number");
@@ -132,8 +132,20 @@ public class GameServer {
         return playerLimit;
     }
 
+    public static void setPlayerLimit(int playerLimit) {
+        GameServer.playerLimit = playerLimit;
+    }
+
     public static void setPlayerTurn(int playerTurn) {
         GameServer.playerTurn = playerTurn;
+    }
+
+    public static int getDeadPlayers() {
+        return deadPlayers;
+    }
+
+    public static void setDeadPlayers(int deadPlayers) {
+        GameServer.deadPlayers = deadPlayers;
     }
 
     private void classChoice(Socket clientSocket, BufferedReader consoleInput, String userName, String playerClass) throws IOException {
@@ -320,7 +332,7 @@ public class GameServer {
                             if (thisPlayerCharacter.getHitpoints() <= 0) {
                                 writeAndSend(socket, "you are kinda dead, what do you expect you can do?");
                                 playerTurn++;
-                                if (playerTurn >= playerLimit) {
+                                if (playerTurn >= getPlayerLimit()) {
                                     System.out.println("wake the monster thread");
                                     this.notifyAll();
                                 }
@@ -362,7 +374,7 @@ public class GameServer {
             occupied = false;
             playerTurn = 0;
         } else {
-            if (playerTurn >= playerLimit) {
+            if (playerTurn >= getPlayerLimit()) {
                 System.out.println("wake the monster thread");
                 this.notifyAll();
             }

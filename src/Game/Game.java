@@ -411,7 +411,7 @@ public class Game {
         sound.getSoundLoopVar().stop();
         sound.setSoundLoop(gameSoundsDirectory + "Victory-Theme.wav");
         inCombat = false;
-        GameServer.deadPlayers = 0;
+        GameServer.setDeadPlayers(0);
         for (PlayerCharacter pc : getParty()) {
             if (pc.getHitpoints() == 0) {
                 pc.setHitpoints(1);
@@ -436,7 +436,7 @@ public class Game {
         while (target.getHitpoints() <= 0) {
             targetIndex = RandomNumber.randomizer(0, (GameServer.getPlayerLimit() - 1));
             target = party.get(targetIndex);
-            if (GameServer.deadPlayers == GameServer.playerLimit) {
+            if (GameServer.getDeadPlayers() == GameServer.getPlayerLimit()) {
                 return printDefeat();
             }
         }
@@ -448,7 +448,7 @@ public class Game {
         }
         target.setHitpoints(target.getHitpoints() - damage);
         if (target.getHitpoints() <= 0) {
-            GameServer.deadPlayers += 1;
+            GameServer.setDeadPlayers(GameServer.getDeadPlayers() + 1);
         }
         System.out.println(target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!");
 
