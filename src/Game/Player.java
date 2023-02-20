@@ -16,6 +16,7 @@ public class Player {
         Socket socket = null;
         // this.character = new PlayerCharacter();
         try {
+            ExecutorService viewMessage = Executors.newCachedThreadPool();
             socket = new Socket("localhost", 8080);
             BufferedReader consoleInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String insertCharName = consoleInput.readLine();
@@ -32,7 +33,7 @@ public class Player {
                 output.newLine();
                 output.flush();
 
-                receiveBroadcast(socket);
+                receiveBroadcast(socket, viewMessage);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -46,14 +47,11 @@ public class Player {
         }
     }
 
-    private static void receiveBroadcast(Socket socket) {
-        ExecutorService viewMessage = Executors.newCachedThreadPool();
-        Socket finalSocket = socket;
-
+    private static void receiveBroadcast(Socket socket, ExecutorService viewMessage) {
         viewMessage.submit(new Thread(() -> {
             String msgReceived = null;
             try {
-                BufferedReader consoleRead = new BufferedReader(new InputStreamReader(finalSocket.getInputStream()));
+                BufferedReader consoleRead = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 while (!viewMessage.isShutdown() && (msgReceived = consoleRead.readLine()) != null) {
                     System.out.println(msgReceived);
                 }

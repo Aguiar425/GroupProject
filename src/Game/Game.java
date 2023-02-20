@@ -55,7 +55,7 @@ public class Game {
         this.healingPotions = 0;
         //this.battleFinalComplete = false;
         this.shopHasKey = true;
-        this.keyCounter = 0;
+        this.keyCounter = 3;
         this.chestOneOpened = false;
         this.chestTwoOpened = false;
         this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");
@@ -514,6 +514,7 @@ public class Game {
 
     public void startAndStopLoops() {
         this.sound.getSoundLoopVar().stop();
+        this.sound.getDungeonSoundLoopVar().setFramePosition(0);
         //this.sound.getDungeonSoundLoopVar().stop();
     }
 

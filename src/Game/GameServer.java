@@ -38,6 +38,7 @@ public class GameServer {
 
     public GameServer() {
         game = new Game();
+        ExecutorService threadFactory;
         ServerSocket serverSocket;
         int totalPlayers = 0;
 
@@ -45,7 +46,7 @@ public class GameServer {
 
         try {
             serverSocket = new ServerSocket(8080);
-            ExecutorService threadFactory = Executors.newCachedThreadPool();
+            threadFactory = Executors.newCachedThreadPool();
 
             while (true) {
                 final Socket clientSocket = serverSocket.accept();

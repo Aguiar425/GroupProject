@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class HealCommandOutOfBattle implements CommandHandler {
-
+    //TODO FIX METHOD
     @Override
     public void execute(GameServer server, Game game, Socket socket, String name) throws IOException {
         PlayerCharacter character = null;
@@ -18,14 +18,13 @@ public class HealCommandOutOfBattle implements CommandHandler {
                 character = pc;
             }
             if (game.getHealingPotions() == 0) {
-                server.broadcastMessage(Messages.NO_POTIONS);
+                server.writeAndSend(socket, Messages.NO_POTIONS);
             } else {
                 if (character.getHitpoints() == character.getMaxHitpoints()) {
-                    server.broadcastMessage(Messages.MAX_HP_HEAL);
+                    server.writeAndSend(socket, Messages.MAX_HP_HEAL);
                 } else {
                     character.setHitpoints(character.getMaxHitpoints());
                     game.setHealingPotions(game.getHealingPotions() - 1);
-
                 }
             }
         }
