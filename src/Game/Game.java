@@ -9,8 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Game {
     private static int currentRoom;
@@ -34,13 +32,11 @@ public class Game {
     private final String gameSoundsDirectory = "resources/soundFx/";
     private final Monster[] allMonsters;
     //private final Clip dungeonLoop;
-    ExecutorService threadFactory;
     Sound sound;
     private List<PlayerCharacter> party;
     private boolean enterTheDungeon;
 
     public Game() {
-        this.threadFactory = Executors.newCachedThreadPool();
         this.sound = new Sound();
         this.inCombat = false;
         this.bossBattle = false;
@@ -55,7 +51,7 @@ public class Game {
         this.healingPotions = 0;
         //this.battleFinalComplete = false;
         this.shopHasKey = true;
-        this.keyCounter = 3;
+        this.keyCounter = 0;
         this.chestOneOpened = false;
         this.chestTwoOpened = false;
         this.sound.setDungeonSoundLoop(gameSoundsDirectory + "Dungeon-Theme.wav");

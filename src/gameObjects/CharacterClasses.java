@@ -1,7 +1,7 @@
 package gameObjects;
 
 public enum CharacterClasses {
-    ROGUE(50, 3, 12, "Rogue"),
+    ROGUE(65, 3, 12, "Rogue"),
     WARRIOR(100, 5, 10, "Warrior"),
     MAGE(30, 10, 15, "Mage");
 
@@ -11,7 +11,7 @@ public enum CharacterClasses {
     private final String description;
 
     CharacterClasses(int startingHitpoints, int minDamage, int maxDamage, String description) {
-        this.startingHitpoints =  startingHitpoints;
+        this.startingHitpoints = startingHitpoints;
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
         this.description = description;

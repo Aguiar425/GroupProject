@@ -24,6 +24,8 @@ public class Player {
 
             BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
             BufferedWriter output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            receiveBroadcast(socket, viewMessage);
+
             while (!socket.isClosed()) {
                 String msgToSend = inputReader.readLine();
                 if (msgToSend.compareTo("EXIT") == 0) {
@@ -32,8 +34,6 @@ public class Player {
                 output.write(msgToSend);
                 output.newLine();
                 output.flush();
-
-                receiveBroadcast(socket, viewMessage);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
