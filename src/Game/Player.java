@@ -16,7 +16,7 @@ public class Player {
         Socket socket = null;
         // this.character = new PlayerCharacter();
         try {
-            ExecutorService viewMessage = Executors.newCachedThreadPool();
+            ExecutorService viewMessage = Executors.newSingleThreadExecutor();
             socket = new Socket("localhost", 8080);
             BufferedReader consoleInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String insertCharName = consoleInput.readLine();

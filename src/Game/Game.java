@@ -369,6 +369,7 @@ public class Game {
 
         for (PlayerCharacter pc :
                 party) {
+            pc.setHitpoints(pc.getMaxHitpoints());
             pc.setMaxHitpoints(pc.getMaxHitpoints() + 20);
             pc.setMinDamage(pc.getMinDamage() + 5);
             pc.setMaxDamage(pc.getMaxDamage() + 2);

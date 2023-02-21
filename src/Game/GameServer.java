@@ -71,6 +71,10 @@ public class GameServer {
 
                     createPlayerThread(threadFactory, clientSocket, userName);
                 } else if (totalPlayers == getPlayerLimit()) {
+                    if (totalPlayers == 1) {
+                        soloPlayerBuff();
+
+                    }
                     broadcastMessage(Colors.BLUE + Colors.BLUE + Messages.USER_JOINED.formatted(userName) + Colors.RESET);
                     broadcastMessage(Colors.BLUE + Messages.GAME_STARTED + Colors.RESET);
 
@@ -90,6 +94,15 @@ public class GameServer {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void soloPlayerBuff() {
+        PlayerCharacter solo = game.getParty().get(0);
+        solo.setMaxHitpoints(solo.getMaxHitpoints() + 70);
+        solo.setHitpoints(solo.getMaxHitpoints());
+        solo.setMinDamage(solo.getMinDamage() + 5);
+        solo.setMaxDamage(solo.getMaxDamage() + 8);
+        System.out.println("Solo mode");
     }
 
     //THESE METHODS ARE USED IN THE INITIALIZATION OF THE GAME
