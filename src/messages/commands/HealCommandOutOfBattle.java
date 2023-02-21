@@ -3,6 +3,7 @@ package messages.commands;
 import Game.Game;
 import Game.GameServer;
 import gameObjects.PlayerCharacter;
+import messages.Colors;
 import messages.Messages;
 
 import java.io.IOException;
@@ -17,16 +18,19 @@ public class HealCommandOutOfBattle implements CommandHandler {
             if (pc.getName().equals(name)) {
                 character = pc;
             }
-            if (game.getHealingPotions() == 0) {
-                server.writeAndSend(socket, Messages.NO_POTIONS);
+        }
+        if (game.getHealingPotions() == 0) {
+            server.writeAndSend(socket, Messages.NO_POTIONS);
+        } else {
+            if (character.getHitpoints() == character.getMaxHitpoints()) {
+                server.writeAndSend(socket, Messages.MAX_HP_HEAL);
             } else {
-                if (character.getHitpoints() == character.getMaxHitpoints()) {
-                    server.writeAndSend(socket, Messages.MAX_HP_HEAL);
-                } else {
-                    character.setHitpoints(character.getMaxHitpoints());
-                    game.setHealingPotions(game.getHealingPotions() - 1);
-                }
+                int amountHealed = character.getMaxHitpoints() - character.getHitpoints();
+                character.setHitpoints(character.getMaxHitpoints());
+                game.setHealingPotions(game.getHealingPotions() - 1);
+                server.writeAndSend(socket, Messages.FULL_HEAL + Colors.BLUE + amountHealed + Colors.RESET + " Hit Points");
             }
         }
+
     }
 }

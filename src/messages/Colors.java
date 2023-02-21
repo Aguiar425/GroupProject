@@ -6,4 +6,5 @@ public class Colors {
     public static final String BLUE = "\033[34m";
     public static final String YELLOW = "\033[33m";
     public static final String PINK = "\u001B[35m";
+    public static final String CYAN = "\033[36m";
 }

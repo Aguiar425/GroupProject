@@ -26,11 +26,11 @@ public class Game {
     private static Boolean chestOneOpened;
     private static Boolean chestTwoOpened;
     private static Boolean partyHasRogue;
+    private static Monster[] allMonsters;
     private final String gameScreensDirectory = "resources/ascii/game_Screens/";
     private final String gameChaptersDirectory = "resources/chapters/";
     private final String gameChoicesDirectory = "resources/chapters/choices/";
     private final String gameSoundsDirectory = "resources/soundFx/";
-    private final Monster[] allMonsters;
     //private final Clip dungeonLoop;
     Sound sound;
     private List<PlayerCharacter> party;
@@ -77,6 +77,14 @@ public class Game {
 
     public static void setPartyHasRogue(Boolean partyHasRogue) {
         Game.partyHasRogue = partyHasRogue;
+    }
+
+    private static void characterReset(PlayerCharacter pc, CharacterClasses characterClass, Game game) {
+        game.populateMonsters();
+        pc.setMaxHitpoints(characterClass.getStartingHitpoints());
+        pc.setMinDamage(characterClass.getMinDamage());
+        pc.setMaxDamage(characterClass.getMaxDamage());
+        pc.setHitpoints(pc.getMaxHitpoints());
     }
 
     public void createCharacter(String name, CharacterClasses classChoice) {
@@ -369,8 +377,8 @@ public class Game {
 
         for (PlayerCharacter pc :
                 party) {
+            pc.setMaxHitpoints(pc.getMaxHitpoints() + 25);
             pc.setHitpoints(pc.getMaxHitpoints());
-            pc.setMaxHitpoints(pc.getMaxHitpoints() + 20);
             pc.setMinDamage(pc.getMinDamage() + 5);
             pc.setMaxDamage(pc.getMaxDamage() + 2);
         }
@@ -421,12 +429,39 @@ public class Game {
 
     public String printDefeat() throws IOException {
         sound.getDungeonSoundLoopVar().stop();
+        sound.getSoundLoopVar().stop();
         sound.setSoundClip(gameSoundsDirectory + "effects/GameOver-Theme.wav");
+
+        GameServer.setPlayerChoices(PlayerChoices.playerChoices(gameChoicesDirectory + "gameOverChoices.txt"));
         Path screen = Path.of(gameScreensDirectory + "gameOver.txt");
-        return Files.readString(screen);
+        Path story = Path.of(gameChaptersDirectory + "TryAgain.txt");
+        return Files.readString(screen) + "\n" + Files.readString(story);
     }
 
-    public String monsterAttack(Monster monster) throws InterruptedException, IOException {
+    public String tryAgain() throws IOException {
+        Game game = new Game();
+//        game.sound.setSoundLoop(gameSoundsDirectory + "Opening-Theme.wav");
+//        game.sound.getSoundLoopVar().start();
+        for (PlayerCharacter pc : party) {
+            if (pc.getCharacterClass().equals(CharacterClasses.ROGUE)) {
+                setPartyHasRogue(true);
+                characterReset(pc, CharacterClasses.ROGUE, game);
+            } else if (pc.getCharacterClass().equals(CharacterClasses.WARRIOR)) {
+                characterReset(pc, CharacterClasses.WARRIOR, game);
+            } else {
+                characterReset(pc, CharacterClasses.MAGE, game);
+            }
+            GameServer.setSpecials(true);
+        }
+
+        return printChapterZero();
+    }
+
+    public void gameEnd() {
+        System.exit(0);
+    }
+
+    public String monsterAttack(Monster monster, GameServer gameServer) throws InterruptedException, IOException {
         int targetIndex = RandomNumber.randomizer(0, (GameServer.getPlayerLimit() - 1));
         PlayerCharacter target = party.get(targetIndex);
 
@@ -448,7 +483,15 @@ public class Game {
             GameServer.setDeadPlayers(GameServer.getDeadPlayers() + 1);
         }
         System.out.println(target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage!");
+        Path screen = null;
+        switch (monster.getMonsterClass()) {
+            case BUG -> screen = Path.of(gameScreensDirectory + "bug.txt");
+            case ELF -> screen = Path.of(gameScreensDirectory + "elf.txt");
+            case GRIFFIN -> screen = Path.of(gameScreensDirectory + "griffin.txt");
+            case FINAL -> screen = Path.of(gameScreensDirectory + "dragon.txt");
+        }
 
+        gameServer.broadcastMessage(Files.readString(screen));
         return target.getName().concat(" received ") + Colors.RED + damage + Colors.RESET + " of damage! " + Colors.BLUE + target.getHitpoints() + "/" + target.getMaxHitpoints() + Colors.RESET + " remaining.";
     }
 

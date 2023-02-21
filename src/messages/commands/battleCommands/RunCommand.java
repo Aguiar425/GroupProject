@@ -16,6 +16,7 @@ public class RunCommand implements BattleHandler {
         if (game.getCurrentRoom() == 24) {
             server.broadcastMessage(Colors.RED + "                      HAHAHAHAH, YOU THINK YOU CAN ESCAPE ME???????" + Colors.RESET);
             server.broadcastMessage(Colors.RED + "                                      THINK AGAIN" + Colors.RESET);
+            return;
         }
         switch (chance) {
             case 1:

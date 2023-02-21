@@ -8,7 +8,8 @@ public enum Commands {
     LIST("/list", new ListCommand()),  //Lists all players
     INVENTORY("/inv", new InventoryCommand()),
     STATS("/stats", new StatsCommand()),
-    HEAL("/heal", new HealCommandOutOfBattle());
+    HEAL("/heal", new HealCommandOutOfBattle()),
+    KEYS("/gibkeys", new gibKeysCommand());
 
     private String description;
     private CommandHandler command;

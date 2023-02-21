@@ -3,6 +3,7 @@ package messages.commands.battleCommands;
 import Game.Game;
 import Game.GameServer;
 import gameObjects.PlayerCharacter;
+import messages.Colors;
 import messages.Messages;
 
 import java.io.IOException;
@@ -17,8 +18,10 @@ public class HealCommand implements BattleHandler {
             if (character.getHitpoints() == character.getMaxHitpoints()) {
                 server.broadcastMessage(Messages.MAX_HP_HEAL);
             } else {
+                int amountHealed = character.getMaxHitpoints() - character.getHitpoints();
                 character.setHitpoints(character.getMaxHitpoints());
                 game.setHealingPotions(game.getHealingPotions() - 1);
+                server.broadcastMessage(Messages.FULL_HEAL + Colors.BLUE + amountHealed + Colors.RESET + " Hit Points");
 
             }
         }
